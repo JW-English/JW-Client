@@ -1,0 +1,14 @@
+{
+  "name": "@jungwoon/api-client",
+  "version": "0.0.1",
+  "private": true,
+  "types": "./src/index.ts",
+  "main": "./src/index.ts",
+  "scripts": {
+    "generate": "npx --yes openapi-typescript@7 http://localhost:8080/v3/api-docs -o ./src/schema.d.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3"
+  }
+}

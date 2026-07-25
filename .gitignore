@@ -1,0 +1,25 @@
+# --- 비밀 값 ---
+# EXPO_PUBLIC_ 값도 번들에 그대로 들어가므로 .env 는 커밋하지 않는다
+.env
+.env.*
+!.env.example
+
+# --- Node ---
+node_modules/
+.turbo/
+dist/
+out/
+.next/
+*.log
+
+# --- Expo ---
+.expo/
+web-build/
+ios/
+android/
+
+# --- IDE / OS ---
+.idea/
+.vscode/
+.DS_Store
+*.tsbuildinfo
