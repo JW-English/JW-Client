@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { ApiError } from '@/lib/api';
+import { ApiError, NetworkError } from '@/lib/api';
 
 type FieldErrors = Record<string, string>;
 
@@ -25,6 +25,17 @@ export function useFormError() {
       return;
     }
     setFields({});
+
+    if (error instanceof NetworkError) {
+      // 개발 중에는 어느 주소로 시도했는지 보여줘야 원인을 찾을 수 있다
+      setMessage(
+        __DEV__
+          ? `서버에 연결하지 못했습니다.\n요청 주소: ${error.url}`
+          : '네트워크 연결을 확인해 주세요.',
+      );
+      return;
+    }
+
     setMessage('네트워크 연결을 확인해 주세요.');
   }
 
