@@ -7,7 +7,8 @@ node_modules/
 .expo/
 dist/
 web-build/
-expo-env.d.ts
+# expo-env.d.ts 는 커밋한다 — CSS 모듈 등의 타입 선언을 물고 있어서
+# 이게 없으면 CI(체크아웃 직후 tsc)가 깨진다.
 
 # Native
 .kotlin/
