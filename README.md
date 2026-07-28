@@ -38,11 +38,37 @@ npm run generate --workspace=@jungwoon/api-client
 `packages/api-client/src/schema.d.ts` 는 생성물이지만 커밋한다. 서버 API 가 바뀌면 재생성 →
 클라이언트에서 **컴파일 에러로 즉시 드러난다.**
 
-## 현재 상태 (P0)
+## 타입 검사에 대해 알아둘 것
+
+`.expo/types/router.d.ts`(타입 라우트)는 `expo start` 가 만드는 생성물이라 커밋하지 않는다.
+따라서 **잘못된 경로 문자열은 로컬에서만 잡히고 CI 는 통과**한다. 화면을 추가한 뒤에는
+개발 서버를 한 번 띄워 타입을 갱신하고 `npm run typecheck` 를 돌리는 게 안전하다.
+
+`expo-env.d.ts` 도 CLI 가 매번 재생성하며 `.gitignore` 에 다시 등록하므로, 같은 선언을
+`apps/mobile/types/globals.d.ts` 에 두고 그쪽을 커밋한다. (이게 없으면 CI 가 깨진다)
+
+## 인증 (P1)
+
+이메일 회원가입·로그인이 동작한다. 토큰은 `expo-secure-store` 에 저장되고 앱을 다시 켜면
+세션이 복구된다. Access Token 이 만료되면 Refresh 로 자동 교체하고, 그마저 실패하면
+(재사용 감지 등) 토큰을 지우고 로그인 화면으로 보낸다.
+
+**소셜 로그인은 개발자 앱 검수 이후에 붙인다.** 카카오·네이버 검수는 실제 회원가입 화면
+캡처를 요구하므로 이메일 경로를 먼저 완성했다.
+
+확인하려면 서버를 띄운 뒤:
+
+```bash
+cd ../Jungwoon/jungwoon-api && docker compose up -d && ./gradlew :api:bootRun   # 서버
+npm run mobile                                                                  # 앱
+```
+
+## 현재 상태
 
 - [x] Expo Router 기반 앱 스캐폴딩 + 다크모드
 - [x] TanStack Query 설정
-- [x] 홈 화면: 서버 헬스체크 카드 + 기능 그리드(Coming Soon)
 - [x] OpenAPI 타입 생성 파이프라인
-- [ ] 소셜 로그인 / SecureStore 토큰 저장 (P1)
+- [x] 이메일 회원가입·로그인, 토큰 보관(SecureStore), 인증 게이트
+- [ ] 온보딩(학년·학교·반 코드) — 서버 API 먼저 필요
+- [ ] 소셜 로그인 (검수 완료 후)
 - [ ] Next.js 관리자 웹 (P2)
