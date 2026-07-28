@@ -15,7 +15,7 @@ type Menu = {
 
 const MENUS: Menu[] = [
   { key: 'homework', label: '숙제', emoji: '📝', href: '/homework' },
-  { key: 'vocabulary', label: '단어시험', emoji: '🔤', phase: 'P3' },
+  { key: 'vocabulary', label: '단어시험', emoji: '🔤', href: '/vocabulary' },
   { key: 'listening', label: '리스닝', emoji: '🎧', phase: 'P4' },
   { key: 'qna', label: 'Q&A', emoji: '💬', phase: 'P5' },
   { key: 'course', label: '인강', emoji: '🎬', phase: 'P6' },

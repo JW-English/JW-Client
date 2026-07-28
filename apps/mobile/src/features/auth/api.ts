@@ -39,3 +39,11 @@ export function logout(refreshToken: string) {
 export function fetchMe(accessToken: string) {
   return apiFetch<Me>('/api/me', { accessToken });
 }
+
+/** 최초 프로필 설정. 이메일·소셜 어느 경로로 가입했든 여기를 거친다. */
+export function completeOnboarding(
+  accessToken: string,
+  body: { name: string; grade: number; school?: string },
+) {
+  return apiFetch<Me>('/api/me/onboarding', { method: 'PUT', accessToken, body });
+}

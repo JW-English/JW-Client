@@ -26,6 +26,7 @@ function createQueryClient() {
 function useAuthRedirect() {
   const restoring = useAuthStore((state) => state.restoring);
   const tokens = useAuthStore((state) => state.tokens);
+  const me = useAuthStore((state) => state.me);
   const segments = useSegments();
   const router = useRouter();
 
@@ -33,12 +34,23 @@ function useAuthRedirect() {
     if (restoring) return;
 
     const inAuthGroup = segments[0] === '(auth)';
-    if (!tokens && !inAuthGroup) {
-      router.replace('/login');
-    } else if (tokens && inAuthGroup) {
+    const inOnboarding = segments[0] === 'onboarding';
+
+    if (!tokens) {
+      if (!inAuthGroup) router.replace('/login');
+      return;
+    }
+
+    // 학년이 없으면 단어 DAY 가 열리지 않는다. 소셜 로그인도 이 화면을 거친다
+    if (me && !me.onboarded) {
+      if (!inOnboarding) router.replace('/onboarding');
+      return;
+    }
+
+    if (inAuthGroup || inOnboarding) {
       router.replace('/');
     }
-  }, [restoring, tokens, segments, router]);
+  }, [restoring, tokens, me, segments, router]);
 
   return restoring;
 }
@@ -78,8 +90,20 @@ function RootNavigator() {
       <Stack.Screen name="index" options={{ title: '정운영어' }} />
       <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
       <Stack.Screen name="(auth)/signup" options={{ title: '회원가입' }} />
+      <Stack.Screen name="onboarding" options={{ title: '프로필 설정', headerBackVisible: false }} />
       <Stack.Screen name="homework/index" options={{ title: '숙제' }} />
       <Stack.Screen name="homework/[id]" options={{ title: '숙제 상세' }} />
+      <Stack.Screen name="vocabulary/index" options={{ title: '단어시험' }} />
+      <Stack.Screen name="vocabulary/[dayId]" options={{ title: '단어장' }} />
+      {/*
+        시험 중 실수로 빠져나가지 않도록 헤더 뒤로가기와 스와이프는 막되,
+        화면 안의 "중단하기"로는 나갈 수 있게 한다 (확인 후 이탈, 답은 저장됨)
+      */}
+      <Stack.Screen
+        name="quiz/[attemptId]/index"
+        options={{ title: '단어시험', headerBackVisible: false, gestureEnabled: false }}
+      />
+      <Stack.Screen name="quiz/[attemptId]/result" options={{ title: '시험 결과' }} />
     </Stack>
   );
 }
