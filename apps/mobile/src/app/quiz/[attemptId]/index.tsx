@@ -24,6 +24,18 @@ export default function QuizScreen() {
 
   const [locked, setLocked] = useState(false);
 
+  /**
+   * 중도 이탈.
+   * 고른 답은 서버에 이미 저장돼 있으므로 나중에 이어 풀 수 있다.
+   * 실수로 나가는 것만 막으면 되니 확인만 한 번 받는다.
+   */
+  function handleExit() {
+    Alert.alert('시험을 중단할까요?', '지금까지 고른 답은 저장돼요. 나중에 이어서 풀 수 있어요.', [
+      { text: '계속 풀기', style: 'cancel' },
+      { text: '나가기', style: 'destructive', onPress: () => router.back() },
+    ]);
+  }
+
   if (!attempt || !current) {
     return (
       <ThemedView style={styles.center}>
@@ -50,9 +62,16 @@ export default function QuizScreen() {
         <View style={[styles.progressTrack, { backgroundColor: theme.backgroundElement }]}>
           <View style={[styles.progressBar, { width: `${progress}%` }]} />
         </View>
-        <ThemedText type="small" themeColor="textSecondary">
-          {index + 1} / {total}
-        </ThemedText>
+        <View style={styles.progressRow}>
+          <ThemedText type="small" themeColor="textSecondary">
+            {index + 1} / {total}
+          </ThemedText>
+          <Pressable onPress={handleExit} hitSlop={10} disabled={submitting}>
+            <ThemedText type="small" themeColor="textSecondary">
+              중단하기
+            </ThemedText>
+          </Pressable>
+        </View>
       </View>
 
       <View style={styles.promptWrap}>
@@ -103,6 +122,11 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, gap: 24 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   progressWrap: { gap: 8 },
+  progressRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   progressTrack: { height: 6, borderRadius: 3, overflow: 'hidden' },
   progressBar: { height: 6, backgroundColor: '#208AEF' },
   promptWrap: { alignItems: 'center', gap: 8, paddingVertical: 24 },

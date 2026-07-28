@@ -35,6 +35,12 @@ export default function WordListScreen() {
   }
 
   async function handleStart() {
+    // 중단했던 응시가 있으면 새로 만들지 않고 이어 푼다
+    if (data?.inProgressAttemptId) {
+      router.push(`/quiz/${data.inProgressAttemptId}`);
+      return;
+    }
+
     try {
       const attempt = await startQuiz.mutateAsync({ dayId });
       router.push(`/quiz/${attempt.attemptId}`);
@@ -90,8 +96,13 @@ export default function WordListScreen() {
       </ScrollView>
 
       <View style={[styles.footer, { borderTopColor: theme.backgroundElement }]}>
+        {data.inProgressAttemptId ? (
+          <ThemedText type="small" themeColor="textSecondary" style={styles.resumeHint}>
+            풀던 시험이 남아 있어요
+          </ThemedText>
+        ) : null}
         <PrimaryButton
-          label="단어시험 응시하기"
+          label={data.inProgressAttemptId ? '이어서 풀기' : '단어시험 응시하기'}
           onPress={handleStart}
           loading={startQuiz.isPending}
         />
@@ -177,5 +188,6 @@ const styles = StyleSheet.create({
   list: { padding: 20, gap: 10 },
   wordRow: { borderRadius: 12, padding: 14, gap: 4 },
   example: { fontStyle: 'italic' },
-  footer: { padding: 20, borderTopWidth: 1 },
+  footer: { padding: 20, borderTopWidth: 1, gap: 8 },
+  resumeHint: { textAlign: 'center' },
 });

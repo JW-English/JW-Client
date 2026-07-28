@@ -9,6 +9,8 @@ export type DayListItem = {
   attemptCount: number;
   firstScore: number | null;
   bestScore: number | null;
+  /** 제출하지 않고 나간 응시가 있으면 그 id */
+  inProgressAttemptId: string | null;
 };
 
 export type WordItem = {
@@ -25,6 +27,7 @@ export type DayDetail = {
   title: string | null;
   scheduledDate: string | null;
   words: WordItem[];
+  inProgressAttemptId: string | null;
 };
 
 /** 진행 중 문항. 정답 정보는 서버가 내려주지 않는다. */

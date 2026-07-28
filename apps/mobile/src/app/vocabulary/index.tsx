@@ -88,8 +88,10 @@ function DayCard({ day, onPress }: { day: DayListItem; onPress: () => void }) {
         <ThemedText type="smallBold">DAY {day.dayNo}</ThemedText>
         <ThemedText
           type="small"
-          style={{ color: done ? '#30A46C' : theme.textSecondary }}>
-          {done ? `${Math.round(day.bestScore ?? 0)}점` : '미응시'}
+          style={{
+            color: day.inProgressAttemptId ? '#F76B15' : done ? '#30A46C' : theme.textSecondary,
+          }}>
+          {day.inProgressAttemptId ? '풀던 시험 있음' : done ? `${Math.round(day.bestScore ?? 0)}점` : '미응시'}
         </ThemedText>
       </View>
 

@@ -82,7 +82,10 @@ function RootNavigator() {
       <Stack.Screen name="homework/[id]" options={{ title: '숙제 상세' }} />
       <Stack.Screen name="vocabulary/index" options={{ title: '단어시험' }} />
       <Stack.Screen name="vocabulary/[dayId]" options={{ title: '단어장' }} />
-      {/* 시험 중에는 뒤로 가기로 빠져나가지 못하게 한다 */}
+      {/*
+        시험 중 실수로 빠져나가지 않도록 헤더 뒤로가기와 스와이프는 막되,
+        화면 안의 "중단하기"로는 나갈 수 있게 한다 (확인 후 이탈, 답은 저장됨)
+      */}
       <Stack.Screen
         name="quiz/[attemptId]/index"
         options={{ title: '단어시험', headerBackVisible: false, gestureEnabled: false }}
