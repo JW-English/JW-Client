@@ -1,6 +1,7 @@
 import { StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
+import { Palette } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 type Props = TextInputProps & {
@@ -21,7 +22,7 @@ export function TextField({ label, error, style, ...rest }: Props) {
           {
             backgroundColor: theme.backgroundElement,
             color: theme.text,
-            borderColor: error ? '#E5484D' : 'transparent',
+            borderColor: error ? Palette.danger : theme.backgroundSelected,
           },
           style,
         ]}
@@ -42,13 +43,18 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   input: {
-    borderRadius: 12,
+    borderRadius: 10,
     borderWidth: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 15,
     fontSize: 16,
+    shadowColor: Palette.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 14,
+    elevation: 1,
   },
   error: {
-    color: '#E5484D',
+    color: Palette.danger,
   },
 });

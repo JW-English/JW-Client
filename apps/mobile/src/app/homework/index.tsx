@@ -4,6 +4,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'reac
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Palette } from '@/constants/theme';
 import type { AssignmentListItem } from '@/features/homework/api';
 import { dDayLabel, STATUS_STYLE } from '@/features/homework/status';
 import { useAssignments } from '@/features/homework/use-homework';
@@ -45,7 +46,7 @@ export default function HomeworkListScreen() {
             숙제를 불러오지 못했습니다
           </ThemedText>
           <Pressable onPress={() => refetch()} style={styles.retry}>
-            <ThemedText type="smallBold" style={{ color: '#208AEF' }}>
+            <ThemedText type="smallBold" style={{ color: Palette.primary }}>
               다시 시도
             </ThemedText>
           </Pressable>
@@ -86,7 +87,11 @@ function AssignmentCard({
       onPress={onPress}
       style={({ pressed }) => [
         styles.card,
-        { backgroundColor: theme.backgroundElement, opacity: pressed ? 0.8 : 1 },
+        {
+          backgroundColor: theme.backgroundElement,
+          borderColor: theme.backgroundSelected,
+          opacity: pressed ? 0.82 : 1,
+        },
       ]}>
       <View style={styles.cardHeader}>
         <View style={[styles.dot, { backgroundColor: status.color }]} />
@@ -135,9 +140,15 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   card: {
-    borderRadius: 14,
+    borderRadius: 16,
     padding: 16,
     gap: 8,
+    borderWidth: 1,
+    shadowColor: Palette.shadow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.07,
+    shadowRadius: 16,
+    elevation: 2,
   },
   cardHeader: {
     flexDirection: 'row',

@@ -1,25 +1,57 @@
+import { SymbolView, type AndroidSymbol, type SFSymbol } from 'expo-symbols';
 import { useRouter, type Href } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
+import { Palette } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 type Menu = {
   key: string;
   label: string;
-  emoji: string;
+  icon: {
+    ios: SFSymbol;
+    android: AndroidSymbol;
+    web: AndroidSymbol;
+  };
   /** 이동할 경로. 없으면 아직 만들지 않은 기능이라 'Coming Soon' 으로 표시한다. */
   href?: Href;
-  phase?: string;
 };
 
 const MENUS: Menu[] = [
-  { key: 'homework', label: '숙제', emoji: '📝', href: '/homework' },
-  { key: 'vocabulary', label: '단어시험', emoji: '🔤', href: '/vocabulary' },
-  { key: 'listening', label: '리스닝', emoji: '🎧', phase: 'P4' },
-  { key: 'qna', label: 'Q&A', emoji: '💬', phase: 'P5' },
-  { key: 'course', label: '인강', emoji: '🎬', phase: 'P6' },
-  { key: 'mypage', label: '마이페이지', emoji: '👤', phase: 'P1' },
+  {
+    key: 'homework',
+    label: '숙제',
+    icon: { ios: 'square.and.pencil', android: 'edit_note', web: 'edit_note' },
+    href: '/homework',
+  },
+  {
+    key: 'vocabulary',
+    label: '단어시험',
+    icon: { ios: 'textformat', android: 'menu_book', web: 'menu_book' },
+    href: '/vocabulary',
+  },
+  {
+    key: 'listening',
+    label: '리스닝',
+    icon: { ios: 'headphones', android: 'headphones', web: 'headphones' },
+    href: '/listening',
+  },
+  {
+    key: 'qna',
+    label: 'Q&A',
+    icon: { ios: 'questionmark.circle', android: 'help', web: 'help' },
+  },
+  {
+    key: 'course',
+    label: '인강',
+    icon: { ios: 'play.circle', android: 'play_circle', web: 'play_circle' },
+  },
+  {
+    key: 'wiki',
+    label: 'Wiki',
+    icon: { ios: 'books.vertical', android: 'dictionary', web: 'dictionary' },
+  },
 ];
 
 export function MenuGrid() {
@@ -35,15 +67,26 @@ export function MenuGrid() {
           onPress={menu.href ? () => router.push(menu.href!) : undefined}
           style={({ pressed }) => [
             styles.tile,
-            { backgroundColor: theme.backgroundElement, opacity: pressed ? 0.8 : 1 },
+            {
+              backgroundColor: theme.backgroundElement,
+              borderColor: theme.backgroundSelected,
+              opacity: pressed ? 0.82 : menu.href ? 1 : 0.58,
+            },
           ]}>
-          <ThemedText style={styles.emoji}>{menu.emoji}</ThemedText>
+          <View style={[styles.iconBubble, { backgroundColor: theme.backgroundSelected }]}>
+            <SymbolView
+              name={menu.icon}
+              size={26}
+              tintColor={Palette.primary}
+              weight={{ ios: 'regular', android: { name: 'outlined', font: 400 } }}
+              fallback={
+                <ThemedText type="smallBold" style={styles.iconFallback}>
+                  {menu.label[0]}
+                </ThemedText>
+              }
+            />
+          </View>
           <ThemedText type="smallBold">{menu.label}</ThemedText>
-          {menu.phase ? (
-            <ThemedText type="small" themeColor="textSecondary">
-              {menu.phase} 예정
-            </ThemedText>
-          ) : null}
         </Pressable>
       ))}
     </View>
@@ -54,18 +97,37 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    justifyContent: 'space-between',
+    rowGap: 14,
   },
   tile: {
-    flexBasis: '31%',
-    flexGrow: 1,
-    aspectRatio: 1,
-    borderRadius: 14,
+    width: '31%',
+    flexGrow: 0,
+    flexShrink: 0,
+    minHeight: 104,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 4,
+    gap: 8,
+    borderWidth: 1,
+    shadowColor: Palette.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 16,
+    elevation: 2,
   },
-  emoji: {
-    fontSize: 28,
+  iconBubble: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconFallback: {
+    minWidth: 26,
+    color: Palette.primary,
+    fontSize: 26,
+    lineHeight: 30,
+    textAlign: 'center',
   },
 });

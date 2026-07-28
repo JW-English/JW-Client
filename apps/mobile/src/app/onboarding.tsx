@@ -6,6 +6,7 @@ import { PrimaryButton } from '@/components/primary-button';
 import { TextField } from '@/components/text-field';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Palette } from '@/constants/theme';
 import { useAuthStore } from '@/features/auth/auth-store';
 import { useFormError } from '@/features/auth/use-form-error';
 import { useTheme } from '@/hooks/use-theme';
@@ -83,7 +84,10 @@ export default function OnboardingScreen() {
                     onPress={() => setGrade(value)}
                     style={[
                       styles.gradeChip,
-                      { backgroundColor: active ? '#208AEF' : theme.backgroundElement },
+                      {
+                        backgroundColor: active ? Palette.primary : theme.backgroundElement,
+                        borderColor: active ? Palette.primary : theme.backgroundSelected,
+                      },
                     ]}>
                     <ThemedText type="smallBold" style={active ? styles.gradeTextActive : undefined}>
                       고{value}
@@ -134,9 +138,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 10,
+    borderWidth: 1,
   },
   gradeTextActive: { color: '#ffffff' },
-  formError: { color: '#E5484D' },
+  formError: { color: Palette.danger },
   hint: { textAlign: 'center' },
 });

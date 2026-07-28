@@ -5,6 +5,7 @@ import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } fro
 import { PrimaryButton } from '@/components/primary-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Palette } from '@/constants/theme';
 import type { WordItem } from '@/features/vocabulary/api';
 import { useDay, useStartQuiz } from '@/features/vocabulary/use-vocabulary';
 import { useTheme } from '@/hooks/use-theme';
@@ -126,7 +127,10 @@ function ToggleChip({
       onPress={onPress}
       style={[
         styles.chip,
-        { backgroundColor: active ? '#208AEF' : theme.backgroundElement },
+        {
+          backgroundColor: active ? Palette.primary : theme.backgroundElement,
+          borderColor: active ? Palette.primary : theme.backgroundSelected,
+        },
       ]}>
       <ThemedText type="small" style={active ? styles.chipTextActive : undefined}>
         {label}
@@ -157,7 +161,10 @@ function WordRow({
   return (
     <Pressable
       onPress={onToggle}
-      style={[styles.wordRow, { backgroundColor: theme.backgroundElement }]}>
+      style={[
+        styles.wordRow,
+        { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected },
+      ]}>
       <ThemedText type="smallBold">
         {showHeadword ? word.headword : '• • •'}
       </ThemedText>
@@ -183,10 +190,15 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderBottomWidth: 1,
   },
-  chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 18 },
+  chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 18, borderWidth: 1 },
   chipTextActive: { color: '#ffffff' },
   list: { padding: 20, gap: 10 },
-  wordRow: { borderRadius: 12, padding: 14, gap: 4 },
+  wordRow: {
+    borderRadius: 14,
+    padding: 14,
+    gap: 4,
+    borderWidth: 1,
+  },
   example: { fontStyle: 'italic' },
   footer: { padding: 20, borderTopWidth: 1, gap: 8 },
   resumeHint: { textAlign: 'center' },

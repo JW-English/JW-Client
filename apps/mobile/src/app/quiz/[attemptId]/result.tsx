@@ -3,6 +3,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'reac
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Palette } from '@/constants/theme';
 import type { ReviewItem } from '@/features/vocabulary/api';
 import { useResult } from '@/features/vocabulary/use-vocabulary';
 import { useTheme } from '@/hooks/use-theme';
@@ -43,7 +44,11 @@ export default function QuizResultScreen() {
   return (
     <ThemedView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={[styles.scoreCard, { backgroundColor: theme.backgroundElement }]}>
+        <View
+          style={[
+            styles.scoreCard,
+            { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected },
+          ]}>
           <ThemedText type="title">{Math.round(data.score)}점</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
             {data.correctCount} / {data.totalCount} 정답 · {formatElapsed(elapsedSeconds)}
@@ -53,7 +58,7 @@ export default function QuizResultScreen() {
               틀린 {wrongCount}개는 오답노트에 담겼어요
             </ThemedText>
           ) : (
-            <ThemedText type="small" style={{ color: '#30A46C' }}>
+            <ThemedText type="small" style={{ color: Palette.success }}>
               모두 맞혔어요
             </ThemedText>
           )}
@@ -66,7 +71,10 @@ export default function QuizResultScreen() {
 
         <Pressable
           onPress={() => router.dismissTo('/vocabulary')}
-          style={[styles.doneButton, { backgroundColor: theme.backgroundElement }]}>
+          style={[
+            styles.doneButton,
+            { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected },
+          ]}>
           <ThemedText type="smallBold">단어장으로 돌아가기</ThemedText>
         </Pressable>
       </ScrollView>
@@ -80,10 +88,14 @@ function ReviewRow({ review }: { review: ReviewItem }) {
   const myAnswer = review.selectedIndex == null ? '무응답' : review.choices[review.selectedIndex];
 
   return (
-    <View style={[styles.reviewRow, { backgroundColor: theme.backgroundElement }]}>
+    <View
+      style={[
+        styles.reviewRow,
+        { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected },
+      ]}>
       <View style={styles.reviewHeader}>
         <ThemedText type="smallBold">{review.headword}</ThemedText>
-        <ThemedText type="small" style={{ color: review.correct ? '#30A46C' : '#E5484D' }}>
+        <ThemedText type="small" style={{ color: review.correct ? Palette.success : Palette.danger }}>
           {review.correct ? '정답' : '오답'}
         </ThemedText>
       </View>
@@ -117,13 +129,13 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   content: { padding: 20, gap: 12 },
-  scoreCard: { borderRadius: 16, padding: 20, gap: 6, alignItems: 'center' },
-  reviewRow: { borderRadius: 12, padding: 14, gap: 4 },
+  scoreCard: { borderRadius: 16, padding: 20, gap: 6, alignItems: 'center', borderWidth: 1 },
+  reviewRow: { borderRadius: 14, padding: 14, gap: 4, borderWidth: 1 },
   reviewHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   example: { fontStyle: 'italic' },
-  doneButton: { borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 8 },
+  doneButton: { borderRadius: 14, padding: 16, alignItems: 'center', marginTop: 8, borderWidth: 1 },
 });

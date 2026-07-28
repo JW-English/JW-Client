@@ -4,6 +4,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'reac
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Palette } from '@/constants/theme';
 import { useAuthStore } from '@/features/auth/auth-store';
 import type { DayListItem } from '@/features/vocabulary/api';
 import { useDays } from '@/features/vocabulary/use-vocabulary';
@@ -32,7 +33,10 @@ export default function VocabularyHomeScreen() {
               onPress={() => setGrade(value)}
               style={[
                 styles.gradeChip,
-                { backgroundColor: active ? '#208AEF' : theme.backgroundElement },
+                {
+                  backgroundColor: active ? Palette.primary : theme.backgroundElement,
+                  borderColor: active ? Palette.primary : theme.backgroundSelected,
+                },
               ]}>
               <ThemedText type="smallBold" style={active ? styles.gradeTextActive : undefined}>
                 고{value}
@@ -82,14 +86,18 @@ function DayCard({ day, onPress }: { day: DayListItem; onPress: () => void }) {
       onPress={onPress}
       style={({ pressed }) => [
         styles.card,
-        { backgroundColor: theme.backgroundElement, opacity: pressed ? 0.8 : 1 },
+        {
+          backgroundColor: theme.backgroundElement,
+          borderColor: theme.backgroundSelected,
+          opacity: pressed ? 0.82 : 1,
+        },
       ]}>
       <View style={styles.cardHeader}>
         <ThemedText type="smallBold">DAY {day.dayNo}</ThemedText>
         <ThemedText
           type="small"
           style={{
-            color: day.inProgressAttemptId ? '#F76B15' : done ? '#30A46C' : theme.textSecondary,
+            color: day.inProgressAttemptId ? Palette.warning : done ? Palette.success : theme.textSecondary,
           }}>
           {day.inProgressAttemptId ? '풀던 시험 있음' : done ? `${Math.round(day.bestScore ?? 0)}점` : '미응시'}
         </ThemedText>
@@ -122,11 +130,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
+    borderWidth: 1,
   },
   gradeTextActive: { color: '#ffffff' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 },
   list: { padding: 20, paddingTop: 6, gap: 12 },
-  card: { borderRadius: 14, padding: 16, gap: 6 },
+  card: {
+    borderRadius: 16,
+    padding: 16,
+    gap: 6,
+    borderWidth: 1,
+    shadowColor: Palette.shadow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.07,
+    shadowRadius: 16,
+    elevation: 2,
+  },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
