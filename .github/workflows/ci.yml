@@ -23,3 +23,6 @@ jobs:
       - run: npm ci
 
       - run: npm run typecheck --workspaces --if-present
+
+      # 타입체크만으로는 Next 빌드 단계의 오류(서버/클라이언트 경계 등)를 못 잡는다
+      - run: npm run build --workspace=admin
