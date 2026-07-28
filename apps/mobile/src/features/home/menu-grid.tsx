@@ -1,6 +1,6 @@
 import { SymbolView, type AndroidSymbol, type SFSymbol } from 'expo-symbols';
 import { useRouter, type Href } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { Palette } from '@/constants/theme';
@@ -16,6 +16,7 @@ type Menu = {
   };
   /** 이동할 경로. 없으면 아직 만들지 않은 기능이라 'Coming Soon' 으로 표시한다. */
   href?: Href;
+  image?: number;
 };
 
 const MENUS: Menu[] = [
@@ -23,34 +24,40 @@ const MENUS: Menu[] = [
     key: 'homework',
     label: '숙제',
     icon: { ios: 'square.and.pencil', android: 'edit_note', web: 'edit_note' },
+    image: require('../../../assets/images/menu-icons/homework.png'),
     href: '/homework',
   },
   {
     key: 'vocabulary',
     label: '단어시험',
     icon: { ios: 'textformat', android: 'menu_book', web: 'menu_book' },
+    image: require('../../../assets/images/menu-icons/vocabulary.png'),
     href: '/vocabulary',
   },
   {
     key: 'listening',
     label: '리스닝',
     icon: { ios: 'headphones', android: 'headphones', web: 'headphones' },
+    image: require('../../../assets/images/menu-icons/listening.png'),
     href: '/listening',
   },
   {
     key: 'qna',
     label: 'Q&A',
     icon: { ios: 'questionmark.circle', android: 'help', web: 'help' },
+    image: require('../../../assets/images/menu-icons/qna.png'),
   },
   {
     key: 'course',
     label: '인강',
     icon: { ios: 'play.circle', android: 'play_circle', web: 'play_circle' },
+    image: require('../../../assets/images/menu-icons/course.png'),
   },
   {
     key: 'wiki',
     label: 'Wiki',
     icon: { ios: 'books.vertical', android: 'dictionary', web: 'dictionary' },
+    image: require('../../../assets/images/menu-icons/wiki.png'),
   },
 ];
 
@@ -73,18 +80,24 @@ export function MenuGrid() {
               opacity: pressed ? 0.82 : menu.href ? 1 : 0.58,
             },
           ]}>
-          <View style={[styles.iconBubble, { backgroundColor: theme.backgroundSelected }]}>
-            <SymbolView
-              name={menu.icon}
-              size={26}
-              tintColor={Palette.primary}
-              weight={{ ios: 'regular', android: { name: 'outlined', font: 400 } }}
-              fallback={
-                <ThemedText type="smallBold" style={styles.iconFallback}>
-                  {menu.label[0]}
-                </ThemedText>
-              }
-            />
+          <View style={styles.iconBubble}>
+            {menu.image ? (
+              <Image source={menu.image} style={styles.imageIcon} resizeMode="contain" />
+            ) : (
+              <View style={[styles.symbolBubble, { backgroundColor: theme.backgroundSelected }]}>
+                <SymbolView
+                  name={menu.icon}
+                  size={26}
+                  tintColor={Palette.primary}
+                  weight={{ ios: 'regular', android: { name: 'outlined', font: 400 } }}
+                  fallback={
+                    <ThemedText type="smallBold" style={styles.iconFallback}>
+                      {menu.label[0]}
+                    </ThemedText>
+                  }
+                />
+              </View>
+            )}
           </View>
           <ThemedText type="smallBold">{menu.label}</ThemedText>
         </Pressable>
@@ -117,6 +130,12 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   iconBubble: {
+    width: 54,
+    height: 54,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  symbolBubble: {
     width: 48,
     height: 48,
     borderRadius: 24,
@@ -129,5 +148,9 @@ const styles = StyleSheet.create({
     fontSize: 26,
     lineHeight: 30,
     textAlign: 'center',
+  },
+  imageIcon: {
+    width: 54,
+    height: 54,
   },
 });
