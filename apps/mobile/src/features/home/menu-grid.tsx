@@ -1,3 +1,4 @@
+import { useRouter, type Href } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -7,12 +8,13 @@ type Menu = {
   key: string;
   label: string;
   emoji: string;
-  /** 아직 만들지 않은 기능은 'Coming Soon' 배지로 표시한다. */
-  phase: string;
+  /** 이동할 경로. 없으면 아직 만들지 않은 기능이라 'Coming Soon' 으로 표시한다. */
+  href?: Href;
+  phase?: string;
 };
 
 const MENUS: Menu[] = [
-  { key: 'homework', label: '숙제', emoji: '📝', phase: 'P2' },
+  { key: 'homework', label: '숙제', emoji: '📝', href: '/homework' },
   { key: 'vocabulary', label: '단어시험', emoji: '🔤', phase: 'P3' },
   { key: 'listening', label: '리스닝', emoji: '🎧', phase: 'P4' },
   { key: 'qna', label: 'Q&A', emoji: '💬', phase: 'P5' },
@@ -22,19 +24,26 @@ const MENUS: Menu[] = [
 
 export function MenuGrid() {
   const theme = useTheme();
+  const router = useRouter();
 
   return (
     <View style={styles.grid}>
       {MENUS.map((menu) => (
         <Pressable
           key={menu.key}
-          disabled
-          style={[styles.tile, { backgroundColor: theme.backgroundElement }]}>
+          disabled={!menu.href}
+          onPress={menu.href ? () => router.push(menu.href!) : undefined}
+          style={({ pressed }) => [
+            styles.tile,
+            { backgroundColor: theme.backgroundElement, opacity: pressed ? 0.8 : 1 },
+          ]}>
           <ThemedText style={styles.emoji}>{menu.emoji}</ThemedText>
           <ThemedText type="smallBold">{menu.label}</ThemedText>
-          <ThemedText type="small" themeColor="textSecondary">
-            {menu.phase} 예정
-          </ThemedText>
+          {menu.phase ? (
+            <ThemedText type="small" themeColor="textSecondary">
+              {menu.phase} 예정
+            </ThemedText>
+          ) : null}
         </Pressable>
       ))}
     </View>

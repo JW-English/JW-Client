@@ -78,6 +78,8 @@ function RootNavigator() {
       <Stack.Screen name="index" options={{ title: '정운영어' }} />
       <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
       <Stack.Screen name="(auth)/signup" options={{ title: '회원가입' }} />
+      <Stack.Screen name="homework/index" options={{ title: '숙제' }} />
+      <Stack.Screen name="homework/[id]" options={{ title: '숙제 상세' }} />
     </Stack>
   );
 }
