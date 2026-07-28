@@ -4,13 +4,13 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'reac
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Palette } from '@/constants/theme';
 import type { ExamListItem } from '@/features/listening/api';
 import { useExams } from '@/features/listening/use-listening';
 import { useTheme } from '@/hooks/use-theme';
 
 /** 시험 선택. 연도로 먼저 좁히고 시험 종류를 고른다. */
 export default function ListeningHomeScreen() {
-  const theme = useTheme();
   const router = useRouter();
   const [year, setYear] = useState<number | null>(null);
 
@@ -86,7 +86,13 @@ function YearChip({
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.chip, { backgroundColor: active ? '#208AEF' : theme.backgroundElement }]}>
+      style={[
+        styles.chip,
+        {
+          backgroundColor: active ? Palette.primary : theme.backgroundElement,
+          borderColor: active ? Palette.primary : theme.backgroundSelected,
+        },
+      ]}>
       <ThemedText type="small" style={active ? styles.chipTextActive : undefined}>
         {label}
       </ThemedText>
@@ -103,7 +109,11 @@ function ExamCard({ exam, onPress }: { exam: ExamListItem; onPress: () => void }
       onPress={onPress}
       style={({ pressed }) => [
         styles.card,
-        { backgroundColor: theme.backgroundElement, opacity: pressed ? 0.8 : 1 },
+        {
+          backgroundColor: theme.backgroundElement,
+          borderColor: theme.backgroundSelected,
+          opacity: pressed ? 0.82 : 1,
+        },
       ]}>
       <ThemedText type="smallBold">{exam.title}</ThemedText>
       <ThemedText type="small" themeColor="textSecondary">
@@ -119,11 +129,21 @@ function ExamCard({ exam, onPress }: { exam: ExamListItem; onPress: () => void }
 const styles = StyleSheet.create({
   container: { flex: 1 },
   yearRow: { gap: 8, paddingHorizontal: 20, paddingVertical: 14 },
-  chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 },
+  chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, borderWidth: 1 },
   chipTextActive: { color: '#ffffff' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   list: { padding: 20, paddingTop: 6, gap: 12 },
-  card: { borderRadius: 14, padding: 16, gap: 8 },
+  card: {
+    borderRadius: 16,
+    padding: 16,
+    gap: 8,
+    borderWidth: 1,
+    shadowColor: Palette.shadow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.07,
+    shadowRadius: 16,
+    elevation: 2,
+  },
   progressTrack: { height: 4, borderRadius: 2, overflow: 'hidden' },
-  progressBar: { height: 4, backgroundColor: '#30A46C' },
+  progressBar: { height: 4, backgroundColor: Palette.success },
 });

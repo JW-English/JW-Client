@@ -1,12 +1,11 @@
 import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, View } from 'react-native';
 
 import { PrimaryButton } from '@/components/primary-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import type { AssignmentDetail } from '@/features/homework/api';
 import { dDayLabel, STATUS_STYLE } from '@/features/homework/status';
 import { MAX_IMAGES, pickPhotos, takePhoto, uploadImage } from '@/features/homework/upload';
 import { useAssignment, useSubmitHomework } from '@/features/homework/use-homework';

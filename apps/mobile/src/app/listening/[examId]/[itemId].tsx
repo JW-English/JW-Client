@@ -5,6 +5,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'reac
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Palette } from '@/constants/theme';
 import type { SentenceItem } from '@/features/listening/api';
 import { useItem, useSaveProgress } from '@/features/listening/use-listening';
 import { findCurrentSentence, useHasTimings } from '@/features/listening/use-sentence-sync';
@@ -97,7 +98,13 @@ export default function ListeningItemScreen() {
         </ThemedText>
         <Pressable
           onPress={() => setShowTranslation((prev) => !prev)}
-          style={[styles.chip, { backgroundColor: showTranslation ? '#208AEF' : theme.backgroundElement }]}>
+          style={[
+            styles.chip,
+            {
+              backgroundColor: showTranslation ? Palette.primary : theme.backgroundElement,
+              borderColor: showTranslation ? Palette.primary : theme.backgroundSelected,
+            },
+          ]}>
           <ThemedText type="small" style={showTranslation ? styles.chipTextActive : undefined}>
             해석 {showTranslation ? '끄기' : '보기'}
           </ThemedText>
@@ -181,7 +188,7 @@ function SentenceRow({
       disabled={!seekable}
       style={[
         styles.sentence,
-        { backgroundColor: active ? '#208AEF22' : 'transparent' },
+        { backgroundColor: active ? theme.backgroundSelected : 'transparent' },
         active ? styles.sentenceActive : null,
       ]}>
       <View style={styles.sentenceHead}>
@@ -221,11 +228,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderBottomWidth: 1,
   },
-  chip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16 },
+  chip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: 1 },
   chipTextActive: { color: '#ffffff' },
   script: { padding: 16, gap: 4 },
   sentence: { borderRadius: 10, paddingHorizontal: 10, paddingVertical: 8, gap: 2 },
-  sentenceActive: { borderLeftWidth: 3, borderLeftColor: '#208AEF' },
+  sentenceActive: { borderLeftWidth: 3, borderLeftColor: Palette.primary },
   sentenceHead: { flexDirection: 'row', gap: 8 },
   speaker: { width: 22 },
   textEn: { flex: 1 },
@@ -238,7 +245,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
     paddingVertical: 10,
     borderRadius: 10,
-    backgroundColor: '#208AEF',
+    backgroundColor: Palette.primary,
   },
   playText: { color: '#ffffff' },
 });

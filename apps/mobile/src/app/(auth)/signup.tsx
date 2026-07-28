@@ -6,6 +6,7 @@ import { PrimaryButton } from '@/components/primary-button';
 import { TextField } from '@/components/text-field';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Palette } from '@/constants/theme';
 import { useAuthStore } from '@/features/auth/auth-store';
 import { useFormError } from '@/features/auth/use-form-error';
 import { useTheme } from '@/hooks/use-theme';
@@ -97,7 +98,11 @@ export default function SignUpScreen() {
           />
 
           {/* 수집 항목과 목적을 화면에 명시한다 — 소셜 로그인 검수에서도 확인하는 부분이다 */}
-          <View style={[styles.consent, { backgroundColor: theme.backgroundElement }]}>
+          <View
+            style={[
+              styles.consent,
+              { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected },
+            ]}>
             <ThemedText type="small" themeColor="textSecondary">
               수집 항목: 이름, 이메일 · 목적: 학습 기록 관리 및 본인 확인
             </ThemedText>
@@ -112,8 +117,8 @@ export default function SignUpScreen() {
               style={[
                 styles.checkbox,
                 {
-                  borderColor: agreed ? '#208AEF' : theme.textSecondary,
-                  backgroundColor: agreed ? '#208AEF' : 'transparent',
+                  borderColor: agreed ? Palette.primary : theme.textSecondary,
+                  backgroundColor: agreed ? Palette.primary : 'transparent',
                 },
               ]}>
               {agreed ? <ThemedText style={styles.check}>✓</ThemedText> : null}
@@ -165,11 +170,12 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   formError: {
-    color: '#E5484D',
+    color: Palette.danger,
   },
   consent: {
-    borderRadius: 12,
+    borderRadius: 10,
     padding: 12,
+    borderWidth: 1,
   },
   agreeRow: {
     flexDirection: 'row',
@@ -196,6 +202,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   link: {
-    color: '#208AEF',
+    color: Palette.primary,
   },
 });

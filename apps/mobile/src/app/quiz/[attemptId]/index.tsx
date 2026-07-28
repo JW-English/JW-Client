@@ -4,6 +4,7 @@ import { ActivityIndicator, Alert, Pressable, StyleSheet, View } from 'react-nat
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Palette } from '@/constants/theme';
 import { useQuizSession } from '@/features/vocabulary/use-quiz-session';
 import { useTheme } from '@/hooks/use-theme';
 
@@ -93,6 +94,7 @@ export default function QuizScreen() {
               styles.choice,
               {
                 backgroundColor: theme.backgroundElement,
+                borderColor: theme.backgroundSelected,
                 opacity: pressed || locked ? 0.7 : 1,
               },
             ]}>
@@ -128,7 +130,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   progressTrack: { height: 6, borderRadius: 3, overflow: 'hidden' },
-  progressBar: { height: 6, backgroundColor: '#208AEF' },
+  progressBar: { height: 6, backgroundColor: Palette.primary },
   promptWrap: { alignItems: 'center', gap: 8, paddingVertical: 24 },
   prompt: { textAlign: 'center' },
   choices: { gap: 10 },
@@ -136,8 +138,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    borderRadius: 12,
+    borderRadius: 14,
     padding: 16,
+    borderWidth: 1,
   },
   choiceNo: { width: 18 },
   choiceText: { flex: 1 },

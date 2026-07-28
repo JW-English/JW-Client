@@ -1,6 +1,7 @@
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
+import { Palette } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { API_BASE_URL } from '@/lib/api';
 
@@ -15,14 +16,20 @@ export function ServerStatusCard() {
   const { data, error, isPending, isFetching, refetch } = useHealth();
 
   const statusText = isPending ? '확인 중…' : error ? '연결 실패' : '정상';
-  const statusColor = isPending ? theme.textSecondary : error ? '#E5484D' : '#30A46C';
+  const statusColor = isPending ? theme.textSecondary : error ? Palette.danger : Palette.success;
 
   return (
     <Pressable
       onPress={() => refetch()}
-      style={[styles.card, { backgroundColor: theme.backgroundElement }]}>
+      style={[
+        styles.card,
+        { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected },
+      ]}>
       <View style={styles.row}>
-        <ThemedText type="smallBold">서버 상태</ThemedText>
+        <View style={styles.titleRow}>
+          <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
+          <ThemedText type="smallBold">서버 상태</ThemedText>
+        </View>
         {isFetching ? (
           <ActivityIndicator size="small" />
         ) : (
@@ -53,13 +60,29 @@ export function ServerStatusCard() {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 14,
-    padding: 16,
-    gap: 6,
+    borderRadius: 16,
+    padding: 17,
+    gap: 7,
+    borderWidth: 1,
+    shadowColor: Palette.shadow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.07,
+    shadowRadius: 16,
+    elevation: 2,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  statusDot: {
+    width: 9,
+    height: 9,
+    borderRadius: 5,
   },
 });

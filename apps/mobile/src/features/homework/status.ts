@@ -1,12 +1,13 @@
 import type { CalendarStatus } from './api';
+import { Palette } from '@/constants/theme';
 
 /** 캘린더 점·뱃지 색. 기획안 5.3의 4색 규칙을 그대로 따른다. */
 export const STATUS_STYLE: Record<CalendarStatus, { label: string; color: string }> = {
-  NOT_SUBMITTED: { label: '미제출', color: '#E5484D' },
+  NOT_SUBMITTED: { label: '미제출', color: Palette.danger },
   OVERDUE: { label: '기한초과', color: '#8E4EC6' },
-  SUBMITTED: { label: '제출완료', color: '#208AEF' },
-  REVIEWED: { label: '첨삭완료', color: '#30A46C' },
-  RESUBMIT_REQUIRED: { label: '재제출 요청', color: '#F76B15' },
+  SUBMITTED: { label: '제출완료', color: Palette.primary },
+  REVIEWED: { label: '첨삭완료', color: Palette.success },
+  RESUBMIT_REQUIRED: { label: '재제출 요청', color: Palette.warning },
 };
 
 export function dDayLabel(dueDate: string, today = new Date()): string {

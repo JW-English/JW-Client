@@ -3,6 +3,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'reac
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Palette } from '@/constants/theme';
 import type { ItemListItem } from '@/features/listening/api';
 import { useItems } from '@/features/listening/use-listening';
 import { useTheme } from '@/hooks/use-theme';
@@ -55,7 +56,11 @@ function ItemRow({ item, onPress }: { item: ItemListItem; onPress: () => void })
       onPress={onPress}
       style={({ pressed }) => [
         styles.row,
-        { backgroundColor: theme.backgroundElement, opacity: pressed ? 0.8 : 1 },
+        {
+          backgroundColor: theme.backgroundElement,
+          borderColor: theme.backgroundSelected,
+          opacity: pressed ? 0.82 : 1,
+        },
       ]}>
       <View style={[styles.no, { backgroundColor: theme.backgroundSelected }]}>
         <ThemedText type="smallBold">{item.itemNo}</ThemedText>
@@ -97,6 +102,7 @@ const styles = StyleSheet.create({
     gap: 12,
     borderRadius: 12,
     padding: 14,
+    borderWidth: 1,
   },
   no: {
     width: 34,
@@ -106,5 +112,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   rowBody: { flex: 1, gap: 2 },
-  done: { color: '#30A46C' },
+  done: { color: Palette.success },
 });

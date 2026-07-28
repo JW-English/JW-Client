@@ -1,6 +1,7 @@
 import { ActivityIndicator, Pressable, StyleSheet, type PressableProps } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
+import { Palette } from '@/constants/theme';
 
 type Props = Omit<PressableProps, 'children'> & {
   label: string;
@@ -34,11 +35,17 @@ export function PrimaryButton({ label, loading, disabled, style, ...rest }: Prop
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#208AEF',
-    borderRadius: 12,
-    paddingVertical: 16,
+    backgroundColor: Palette.primary,
+    borderRadius: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 18,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: Palette.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 3,
   },
   disabled: {
     opacity: 0.5,
@@ -49,5 +56,6 @@ const styles = StyleSheet.create({
   label: {
     color: '#ffffff',
     fontSize: 16,
+    letterSpacing: 0,
   },
 });

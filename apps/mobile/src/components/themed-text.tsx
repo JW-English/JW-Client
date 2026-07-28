@@ -32,14 +32,14 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
 
 const styles = StyleSheet.create({
   small: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: 500,
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: 400,
   },
   smallBold: {
     fontSize: 14,
     lineHeight: 20,
-    fontWeight: 700,
+    fontWeight: 600,
   },
   default: {
     fontSize: 16,
@@ -47,14 +47,14 @@ const styles = StyleSheet.create({
     fontWeight: 500,
   },
   title: {
-    fontSize: 48,
-    fontWeight: 600,
-    lineHeight: 52,
+    fontSize: 26,
+    fontWeight: 700,
+    lineHeight: 32,
   },
   subtitle: {
-    fontSize: 32,
-    lineHeight: 44,
-    fontWeight: 600,
+    fontSize: 24,
+    lineHeight: 32,
+    fontWeight: 800,
   },
   link: {
     lineHeight: 30,
