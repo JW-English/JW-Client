@@ -104,6 +104,9 @@ function RootNavigator() {
         options={{ title: '단어시험', headerBackVisible: false, gestureEnabled: false }}
       />
       <Stack.Screen name="quiz/[attemptId]/result" options={{ title: '시험 결과' }} />
+      <Stack.Screen name="listening/index" options={{ title: '리스닝' }} />
+      <Stack.Screen name="listening/[examId]/index" options={{ title: '문항 선택' }} />
+      <Stack.Screen name="listening/[examId]/[itemId]" options={{ title: '듣기 학습' }} />
     </Stack>
   );
 }
