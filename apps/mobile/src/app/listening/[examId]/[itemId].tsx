@@ -5,13 +5,13 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'reac
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Palette } from '@/constants/theme';
 import type { SentenceItem } from '@/features/listening/api';
 import { useItem, useSaveProgress } from '@/features/listening/use-listening';
 import { findCurrentSentence, useHasTimings } from '@/features/listening/use-sentence-sync';
 import { useTheme } from '@/hooks/use-theme';
 
 const SPEEDS = [0.75, 1, 1.25];
+const PRIMARY_BLUE = '#5BA9FF';
 
 /**
  * 문항 학습 화면.
@@ -101,8 +101,8 @@ export default function ListeningItemScreen() {
           style={[
             styles.chip,
             {
-              backgroundColor: showTranslation ? Palette.primary : theme.backgroundElement,
-              borderColor: showTranslation ? Palette.primary : theme.backgroundSelected,
+              backgroundColor: showTranslation ? PRIMARY_BLUE : theme.backgroundElement,
+              borderColor: showTranslation ? PRIMARY_BLUE : theme.backgroundSelected,
             },
           ]}>
           <ThemedText type="small" style={showTranslation ? styles.chipTextActive : undefined}>
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
   chipTextActive: { color: '#ffffff' },
   script: { padding: 16, gap: 4 },
   sentence: { borderRadius: 10, paddingHorizontal: 10, paddingVertical: 8, gap: 2 },
-  sentenceActive: { borderLeftWidth: 3, borderLeftColor: Palette.primary },
+  sentenceActive: { borderLeftWidth: 3, borderLeftColor: PRIMARY_BLUE },
   sentenceHead: { flexDirection: 'row', gap: 8 },
   speaker: { width: 22 },
   textEn: { flex: 1 },
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
     paddingVertical: 10,
     borderRadius: 10,
-    backgroundColor: Palette.primary,
+    backgroundColor: PRIMARY_BLUE,
   },
   playText: { color: '#ffffff' },
 });
