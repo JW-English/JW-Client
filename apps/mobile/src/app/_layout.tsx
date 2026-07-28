@@ -80,6 +80,14 @@ function RootNavigator() {
       <Stack.Screen name="(auth)/signup" options={{ title: '회원가입' }} />
       <Stack.Screen name="homework/index" options={{ title: '숙제' }} />
       <Stack.Screen name="homework/[id]" options={{ title: '숙제 상세' }} />
+      <Stack.Screen name="vocabulary/index" options={{ title: '단어시험' }} />
+      <Stack.Screen name="vocabulary/[dayId]" options={{ title: '단어장' }} />
+      {/* 시험 중에는 뒤로 가기로 빠져나가지 못하게 한다 */}
+      <Stack.Screen
+        name="quiz/[attemptId]/index"
+        options={{ title: '단어시험', headerBackVisible: false, gestureEnabled: false }}
+      />
+      <Stack.Screen name="quiz/[attemptId]/result" options={{ title: '시험 결과' }} />
     </Stack>
   );
 }
