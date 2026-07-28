@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 import { ApiError } from '@/lib/api';
 
-import { fetchMe, login, logout, refreshTokens, signUp, type Me } from './api';
+import { completeOnboarding, fetchMe, login, logout, refreshTokens, signUp, type Me } from './api';
 import { tokenStorage, type StoredTokens } from './token-storage';
 
 type AuthState = {
@@ -17,6 +17,8 @@ type AuthState = {
   signOut: () => Promise<void>;
   /** 만료된 Access Token 을 Refresh 로 교체한다. 실패하면 로그아웃된다. */
   refresh: () => Promise<string | null>;
+  /** 최초 프로필 설정 (학년·학교). 학년이 있어야 단어 DAY 가 열린다. */
+  submitOnboarding: (input: { name: string; grade: number; school?: string }) => Promise<void>;
 };
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -90,7 +92,36 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       return null;
     }
   },
+
+  async submitOnboarding(input) {
+    // 서버가 갱신된 프로필을 그대로 돌려주므로 다시 조회하지 않는다
+    const me = await withAuthToken((token) => completeOnboarding(token, input));
+    set({ me });
+  },
 }));
+
+/**
+ * 토큰이 만료됐으면 한 번 갱신하고 재시도한다.
+ * (lib/with-auth 는 이 스토어를 참조하므로 순환 의존을 피해 여기 둔다)
+ */
+async function withAuthToken<T>(request: (accessToken: string) => Promise<T>): Promise<T> {
+  const { tokens, refresh } = useAuthStore.getState();
+  if (!tokens) {
+    throw new ApiError(401);
+  }
+
+  try {
+    return await request(tokens.accessToken);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) {
+      const renewed = await refresh();
+      if (renewed) {
+        return request(renewed);
+      }
+    }
+    throw error;
+  }
+}
 
 async function applyTokens(
   set: (partial: Partial<AuthState>) => void,
