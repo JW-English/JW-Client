@@ -195,22 +195,44 @@ export default function ListeningItemScreen() {
   return (
     <ThemedView style={styles.container}>
       <View style={[styles.header, { borderBottomColor: theme.backgroundElement }]}>
-        <ThemedText type="small" numberOfLines={2}>
-          {data.questionText ?? `${data.itemNo}번 문항`}
-        </ThemedText>
-        <Pressable
-          onPress={() => setShowTranslation((prev) => !prev)}
-          style={[
-            styles.chip,
-            {
-              backgroundColor: showTranslation ? PRIMARY_BLUE : theme.backgroundElement,
-              borderColor: showTranslation ? PRIMARY_BLUE : theme.backgroundSelected,
-            },
-          ]}>
-          <ThemedText type="small" style={showTranslation ? styles.chipTextActive : undefined}>
-            해석 {showTranslation ? '끄기' : '보기'}
+        <View style={styles.headerTop}>
+          {/* 발문에 가려 지금이 몇 번인지 안 보이던 문제 — 번호를 앞에 세운다 */}
+          <View style={styles.itemNoBadge}>
+            <ThemedText type="smallBold" style={styles.itemNoText}>
+              {data.itemNo}번
+            </ThemedText>
+          </View>
+
+          {items && items.length > 0 ? (
+            <ThemedText type="small" themeColor="textSecondary">
+              전체 {items.length}문항
+            </ThemedText>
+          ) : null}
+
+          <View style={styles.headerSpacer} />
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={showTranslation ? '해석 끄기' : '해석 보기'}
+            onPress={() => setShowTranslation((prev) => !prev)}
+            style={[
+              styles.chip,
+              {
+                backgroundColor: showTranslation ? PRIMARY_BLUE : theme.backgroundElement,
+                borderColor: showTranslation ? PRIMARY_BLUE : theme.backgroundSelected,
+              },
+            ]}>
+            <ThemedText type="small" style={showTranslation ? styles.chipTextActive : undefined}>
+              해석 {showTranslation ? '끄기' : '보기'}
+            </ThemedText>
+          </Pressable>
+        </View>
+
+        {data.questionText ? (
+          <ThemedText type="small" numberOfLines={2}>
+            {data.questionText}
           </ThemedText>
-        </Pressable>
+        ) : null}
       </View>
 
       <ScrollView
@@ -483,13 +505,20 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
+    gap: 8,
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderBottomWidth: 1,
   },
+  headerTop: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  headerSpacer: { flex: 1 },
+  itemNoBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    backgroundColor: PRIMARY_BLUE,
+  },
+  itemNoText: { color: '#ffffff' },
   chip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: 1 },
   chipTextActive: { color: '#ffffff' },
   script: { padding: 16, gap: 4 },
