@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { SymbolView } from 'expo-symbols';
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -53,6 +54,25 @@ export default function ListeningHomeScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      <View style={styles.topRow}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="저장한 회차"
+          onPress={() => router.push('/listening/downloads')}
+          hitSlop={8}
+          style={styles.downloadsLink}>
+          <SymbolView
+            name={{ ios: 'arrow.down.circle', android: 'download', web: 'download' }}
+            size={15}
+            tintColor={Palette.primary}
+            weight={{ ios: 'regular', android: { name: 'outlined', font: 400 } }}
+          />
+          <ThemedText type="small" style={styles.downloadsText}>
+            저장한 회차
+          </ThemedText>
+        </Pressable>
+      </View>
+
       {years.length > 1 ? (
         <FilterChipRow>
           <FilterChip label="전체" active={year === null} onPress={() => setYear(null)} />
@@ -140,6 +160,9 @@ function ExamCard({ exam, onPress }: { exam: ExamListItem; onPress: () => void }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  topRow: { alignItems: 'flex-end', paddingHorizontal: 20, paddingTop: 12 },
+  downloadsLink: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  downloadsText: { color: Palette.primary },
   // 연도 줄 바로 아래라 위쪽 여백을 줄인다
   typeRow: { paddingTop: 0 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
