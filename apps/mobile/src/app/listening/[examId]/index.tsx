@@ -1,8 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
-import { FilterChip, FilterChipRow } from '@/components/filter-chip';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Palette } from '@/constants/theme';
@@ -10,36 +8,12 @@ import type { ItemListItem } from '@/features/listening/api';
 import { useItems } from '@/features/listening/use-listening';
 import { useTheme } from '@/hooks/use-theme';
 
-type ProgressFilter = 'ALL' | 'NOT_STARTED' | 'IN_PROGRESS' | 'DONE';
-
-const FILTERS: { key: ProgressFilter; label: string }[] = [
-  { key: 'ALL', label: '전체' },
-  { key: 'NOT_STARTED', label: '안 들음' },
-  { key: 'IN_PROGRESS', label: '듣는 중' },
-  { key: 'DONE', label: '완료' },
-];
-
-/**
- * 진행 상태 판정.
- * 서버가 상태 필드를 따로 주지는 않지만 completed·lastPositionMs 로 충분히 갈린다.
- */
-function progressOf(item: ItemListItem): Exclude<ProgressFilter, 'ALL'> {
-  if (item.completed) return 'DONE';
-  return item.lastPositionMs > 0 ? 'IN_PROGRESS' : 'NOT_STARTED';
-}
-
 /** 문항 선택 (1~17번). */
 export default function ListeningItemsScreen() {
   const { examId } = useLocalSearchParams<{ examId: string }>();
   const router = useRouter();
-  const [filter, setFilter] = useState<ProgressFilter>('ALL');
 
   const { data, isPending, error } = useItems(examId);
-
-  const visible = useMemo(
-    () => (data ?? []).filter((item) => filter === 'ALL' || progressOf(item) === filter),
-    [data, filter],
-  );
 
   if (isPending) {
     return (
@@ -61,40 +35,15 @@ export default function ListeningItemsScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <FilterChipRow>
-        {FILTERS.map(({ key, label }) => (
-          <FilterChip
-            key={key}
-            label={label}
-            active={filter === key}
-            onPress={() => setFilter(key)}
+      <ScrollView contentContainerStyle={styles.list}>
+        {data.map((item) => (
+          <ItemRow
+            key={item.id}
+            item={item}
+            onPress={() => router.push(`/listening/${examId}/${item.id}`)}
           />
         ))}
-      </FilterChipRow>
-
-      {visible.length === 0 ? (
-        <View style={styles.center}>
-          <ThemedText type="small" themeColor="textSecondary">
-            {filter === 'DONE'
-              ? '아직 완료한 문항이 없어요'
-              : filter === 'IN_PROGRESS'
-                ? '듣는 중인 문항이 없어요'
-                : filter === 'NOT_STARTED'
-                  ? '모든 문항을 시작했어요'
-                  : '문항이 없어요'}
-          </ThemedText>
-        </View>
-      ) : (
-        <ScrollView contentContainerStyle={styles.list}>
-          {visible.map((item) => (
-            <ItemRow
-              key={item.id}
-              item={item}
-              onPress={() => router.push(`/listening/${examId}/${item.id}`)}
-            />
-          ))}
-        </ScrollView>
-      )}
+      </ScrollView>
     </ThemedView>
   );
 }
