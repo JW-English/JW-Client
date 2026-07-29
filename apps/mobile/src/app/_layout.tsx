@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, useColorScheme, View } from 'react-native';
 
 import { useAuthStore } from '@/features/auth/auth-store';
+import { useProgressQueueFlush } from '@/features/listening/use-network';
 
 /** 서버 상태는 TanStack Query, UI 상태는 Zustand 로 분리한다. */
 function createQueryClient() {
@@ -91,6 +92,9 @@ export default function RootLayout() {
 
 function RootNavigator() {
   const restoring = useAuthRedirect();
+
+  // 오프라인에서 쌓인 듣기 진도를 온라인 복귀 시 보낸다
+  useProgressQueueFlush();
 
   if (restoring) {
     return (
