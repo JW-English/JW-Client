@@ -36,6 +36,8 @@ export type ItemDetail = {
   itemNo: number;
   itemType: string | null;
   questionText: string | null;
+  /** "2026학년도 수능". 서버를 올리기 전 빌드에서는 없을 수 있어 optional 로 둔다 */
+  examLabel?: string;
   /** 만료형 URL. 저장하지 않고 매번 받아 쓴다 */
   audioUrl: string;
   durationMs: number | null;
