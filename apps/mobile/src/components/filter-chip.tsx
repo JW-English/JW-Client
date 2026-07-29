@@ -52,14 +52,27 @@ export function FilterChipRow({
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
+      // flexGrow 를 막지 않으면 가로 스크롤뷰가 세로 공간을 차지하고,
+      // contentContainer 기본값(stretch)이 칩을 그 높이만큼 늘려버린다
+      style={styles.scroll}
       contentContainerStyle={[styles.row, style]}>
       {children}
     </ScrollView>
   );
 }
 
+const CHIP_HEIGHT = 38;
+
 const styles = StyleSheet.create({
-  row: { gap: 8, paddingHorizontal: 20, paddingVertical: 10 },
-  chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, borderWidth: 1 },
+  scroll: { flexGrow: 0, flexShrink: 0 },
+  row: { gap: 8, paddingHorizontal: 20, paddingVertical: 8, alignItems: 'center' },
+  chip: {
+    height: CHIP_HEIGHT,
+    paddingHorizontal: 18,
+    borderRadius: CHIP_HEIGHT / 2,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   chipTextActive: { color: '#ffffff' },
 });
