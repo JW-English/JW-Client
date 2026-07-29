@@ -18,6 +18,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import type { SentenceItem } from '@/features/listening/api';
 import { useItem, useItems, useSaveProgress } from '@/features/listening/use-listening';
+import { useLockScreenControls } from '@/features/listening/use-lock-screen';
 import { findCurrentSentence, useHasTimings } from '@/features/listening/use-sentence-sync';
 import { useTheme } from '@/hooks/use-theme';
 
@@ -72,6 +73,12 @@ export default function ListeningItemScreen() {
   const viewportRef = useRef(0);
   const scrollYRef = useRef(0);
   const manualScrollAtRef = useRef(0);
+
+  // 잠금화면 컨트롤. 안드로이드 백그라운드 3분 제한을 푸는 데도 필요하다
+  useLockScreenControls(
+    player,
+    data ? { title: `${data.itemNo}번`, artist: data.examLabel ?? '듣기' } : null,
+  );
 
   const sentences = data?.sentences ?? [];
   const hasTimings = useHasTimings(sentences);

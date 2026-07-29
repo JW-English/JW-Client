@@ -16,6 +16,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Palette } from '@/constants/theme';
 import { usePlaylist } from '@/features/listening/use-listening';
+import { useLockScreenControls } from '@/features/listening/use-lock-screen';
 import { useTheme } from '@/hooks/use-theme';
 
 const SPEEDS = [0.75, 1, 1.25];
@@ -43,6 +44,11 @@ export default function ListeningFullPlayScreen() {
   const current = tracks[index];
   const player = useAudioPlayer(current ? { uri: current.audioUrl } : null);
   const status = useAudioPlayerStatus(player);
+
+  useLockScreenControls(
+    player,
+    current && data ? { title: current.label, artist: data.examLabel } : null,
+  );
 
   const positionMs = Math.round((status.currentTime ?? 0) * 1000);
   const durationMs = Math.round((status.duration ?? 0) * 1000) || (current?.durationMs ?? 0);

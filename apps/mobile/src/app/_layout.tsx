@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { setAudioModeAsync } from 'expo-audio';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
@@ -63,6 +64,20 @@ export default function RootLayout() {
   useEffect(() => {
     restore();
   }, [restore]);
+
+  // 듣기 음원을 화면이 꺼져도 계속 재생하려면 오디오 세션을 이렇게 잡아야 한다.
+  // app.json 의 UIBackgroundModes 선언만으로는 동작하지 않는다.
+  useEffect(() => {
+    setAudioModeAsync({
+      shouldPlayInBackground: true,
+      // 학습 앱이라 무음 스위치가 켜져 있어도 소리가 나야 한다
+      playsInSilentMode: true,
+      // 듣기는 집중이 목적이므로 다른 앱 오디오는 멈춘다
+      interruptionMode: 'doNotMix',
+    }).catch(() => {
+      // 오디오 세션 설정 실패가 앱 실행을 막을 이유는 없다. 재생 시 다시 시도된다
+    });
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
