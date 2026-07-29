@@ -6,7 +6,10 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Palette } from '@/constants/theme';
 import type { ItemListItem } from '@/features/listening/api';
+import type { DownloadState } from '@/features/listening/use-offline';
 import { useExams, useItems } from '@/features/listening/use-listening';
+import { useIsOnline } from '@/features/listening/use-network';
+import { useExamDownload } from '@/features/listening/use-offline';
 import { useTheme } from '@/hooks/use-theme';
 
 /** 문항 선택 (1~17번). */
@@ -20,6 +23,9 @@ export default function ListeningItemsScreen() {
   const { data: exams } = useExams();
   const exam = exams?.find((e) => e.id === examId);
   const title = exam ? `${exam.year}학년도 ${exam.examTypeLabel}` : '';
+
+  const online = useIsOnline();
+  const { offline, state, download, remove } = useExamDownload(examId);
 
   if (isPending) {
     return (
@@ -61,6 +67,14 @@ export default function ListeningItemsScreen() {
             전체 듣기
           </ThemedText>
         </Pressable>
+
+        <DownloadButton
+          offline={Boolean(offline?.complete)}
+          state={state}
+          online={online}
+          onDownload={download}
+          onRemove={remove}
+        />
       </View>
 
       <ScrollView contentContainerStyle={styles.list}>
@@ -73,6 +87,81 @@ export default function ListeningItemsScreen() {
         ))}
       </ScrollView>
     </ThemedView>
+  );
+}
+
+/** 회차 단위 다운로드 버튼. 한 회차가 약 51MB 라 전체 일괄 다운로드는 두지 않는다 */
+function DownloadButton({
+  offline,
+  state,
+  online,
+  onDownload,
+  onRemove,
+}: {
+  offline: boolean;
+  state: DownloadState;
+  online: boolean;
+  onDownload: () => void;
+  onRemove: () => void;
+}) {
+  const theme = useTheme();
+
+  if (state.status === 'downloading') {
+    return (
+      <View style={[styles.downloadButton, { backgroundColor: theme.backgroundElement }]}>
+        <ActivityIndicator size="small" />
+        <ThemedText type="small" themeColor="textSecondary">
+          {state.done}/{state.total}
+        </ThemedText>
+      </View>
+    );
+  }
+
+  if (offline) {
+    return (
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="다운로드 삭제"
+        onPress={onRemove}
+        style={({ pressed }) => [
+          styles.downloadButton,
+          { backgroundColor: theme.backgroundElement, opacity: pressed ? 0.82 : 1 },
+        ]}>
+        <SymbolView
+          name={{ ios: 'checkmark.circle.fill', android: 'check_circle', web: 'check_circle' }}
+          size={16}
+          tintColor={Palette.success}
+          weight={{ ios: 'regular', android: { name: 'outlined', font: 400 } }}
+        />
+        <ThemedText type="small" themeColor="textSecondary">
+          저장됨
+        </ThemedText>
+      </Pressable>
+    );
+  }
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel="오프라인 저장"
+      accessibilityState={{ disabled: !online }}
+      disabled={!online}
+      onPress={onDownload}
+      style={({ pressed }) => [
+        styles.downloadButton,
+        {
+          backgroundColor: theme.backgroundElement,
+          opacity: !online ? 0.4 : pressed ? 0.82 : 1,
+        },
+      ]}>
+      <SymbolView
+        name={{ ios: 'arrow.down.circle', android: 'download', web: 'download' }}
+        size={16}
+        tintColor={theme.text}
+        weight={{ ios: 'regular', android: { name: 'outlined', font: 400 } }}
+      />
+      <ThemedText type="small">{state.status === 'error' ? '다시 시도' : '저장'}</ThemedText>
+    </Pressable>
   );
 }
 
@@ -122,7 +211,7 @@ function formatDuration(ms: number) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  actionRow: { paddingHorizontal: 20, paddingTop: 14 },
+  actionRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 20, paddingTop: 14 },
   // 필터 칩과 같은 높이·모서리로 맞춘다
   fullPlayButton: {
     flexDirection: 'row',
@@ -136,6 +225,15 @@ const styles = StyleSheet.create({
     backgroundColor: Palette.primary,
   },
   fullPlayText: { color: '#ffffff' },
+  downloadButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    height: 38,
+    paddingHorizontal: 16,
+    borderRadius: 19,
+  },
   list: { padding: 20, paddingTop: 6, gap: 10 },
   row: {
     flexDirection: 'row',

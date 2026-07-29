@@ -1,10 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { setAudioModeAsync } from 'expo-audio';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, useColorScheme, View } from 'react-native';
 
 import { useAuthStore } from '@/features/auth/auth-store';
+import { useProgressQueueFlush } from '@/features/listening/use-network';
 
 /** 서버 상태는 TanStack Query, UI 상태는 Zustand 로 분리한다. */
 function createQueryClient() {
@@ -64,6 +66,20 @@ export default function RootLayout() {
     restore();
   }, [restore]);
 
+  // 듣기 음원을 화면이 꺼져도 계속 재생하려면 오디오 세션을 이렇게 잡아야 한다.
+  // app.json 의 UIBackgroundModes 선언만으로는 동작하지 않는다.
+  useEffect(() => {
+    setAudioModeAsync({
+      shouldPlayInBackground: true,
+      // 학습 앱이라 무음 스위치가 켜져 있어도 소리가 나야 한다
+      playsInSilentMode: true,
+      // 듣기는 집중이 목적이므로 다른 앱 오디오는 멈춘다
+      interruptionMode: 'doNotMix',
+    }).catch(() => {
+      // 오디오 세션 설정 실패가 앱 실행을 막을 이유는 없다. 재생 시 다시 시도된다
+    });
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -76,6 +92,9 @@ export default function RootLayout() {
 
 function RootNavigator() {
   const restoring = useAuthRedirect();
+
+  // 오프라인에서 쌓인 듣기 진도를 온라인 복귀 시 보낸다
+  useProgressQueueFlush();
 
   if (restoring) {
     return (
@@ -105,6 +124,7 @@ function RootNavigator() {
       />
       <Stack.Screen name="quiz/[attemptId]/result" options={{ title: '시험 결과' }} />
       <Stack.Screen name="listening/index" options={{ title: '리스닝' }} />
+      <Stack.Screen name="listening/downloads" options={{ title: '저장한 회차' }} />
       {/* 아래 두 화면은 제목을 시험 이름으로 바꾼다. 데이터를 받은 뒤라 화면 쪽에서 설정한다 */}
       <Stack.Screen name="listening/[examId]/index" options={{ title: '' }} />
       <Stack.Screen name="listening/[examId]/full" options={{ title: '' }} />

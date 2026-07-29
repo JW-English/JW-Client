@@ -17,7 +17,10 @@ import {
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import type { SentenceItem } from '@/features/listening/api';
-import { useItem, useItems, useSaveProgress } from '@/features/listening/use-listening';
+import { useItem, useItems } from '@/features/listening/use-listening';
+import { localUri, readOfflineExam } from '@/features/listening/offline-store';
+import { enqueueProgress } from '@/features/listening/progress-queue';
+import { useLockScreenControls } from '@/features/listening/use-lock-screen';
 import { findCurrentSentence, useHasTimings } from '@/features/listening/use-sentence-sync';
 import { useTheme } from '@/hooks/use-theme';
 
@@ -50,9 +53,23 @@ export default function ListeningItemScreen() {
 
   const { data, isPending, error } = useItem(itemId);
   const { data: items } = useItems(examId);
-  const saveProgress = useSaveProgress(itemId);
 
-  const player = useAudioPlayer(data ? { uri: data.audioUrl } : null);
+  // 받아둔 회차면 로컬 파일로 재생한다. 없으면 기존대로 스트리밍
+  const [offlineUri, setOfflineUri] = useState<string | null>(null);
+  useEffect(() => {
+    let alive = true;
+    readOfflineExam(examId).then((saved) => {
+      if (!alive || !saved?.complete) return;
+      const found = saved.items.find((i) => i.id === itemId);
+      setOfflineUri(localUri(examId, found?.fileName));
+    });
+    return () => {
+      alive = false;
+    };
+  }, [examId, itemId]);
+
+  const source = offlineUri ?? data?.audioUrl;
+  const player = useAudioPlayer(source ? { uri: source } : null);
   const status = useAudioPlayerStatus(player);
 
   const [showTranslation, setShowTranslation] = useState(true);
@@ -72,6 +89,12 @@ export default function ListeningItemScreen() {
   const viewportRef = useRef(0);
   const scrollYRef = useRef(0);
   const manualScrollAtRef = useRef(0);
+
+  // 잠금화면 컨트롤. 안드로이드 백그라운드 3분 제한을 푸는 데도 필요하다
+  useLockScreenControls(
+    player,
+    data ? { title: `${data.itemNo}번`, artist: data.examLabel ?? '듣기' } : null,
+  );
 
   const sentences = data?.sentences ?? [];
   const hasTimings = useHasTimings(sentences);
@@ -102,7 +125,8 @@ export default function ListeningItemScreen() {
     if (positionMs - lastSavedRef.current < 10_000) return;
 
     lastSavedRef.current = positionMs;
-    saveProgress.mutate({
+    // 오프라인이면 기기에 쌓아 두고 온라인 복귀 시 보낸다 (이전에는 그냥 유실됐다)
+    enqueueProgress(itemId, {
       lastPositionMs: positionMs,
       completed: status.duration > 0 && status.currentTime / status.duration > 0.9,
     });
@@ -165,7 +189,7 @@ export default function ListeningItemScreen() {
     if (!targetId) return;
 
     if (positionMs > 0) {
-      saveProgress.mutate({
+      enqueueProgress(itemId, {
         lastPositionMs: positionMs,
         completed: status.duration > 0 && status.currentTime / status.duration > 0.9,
       });

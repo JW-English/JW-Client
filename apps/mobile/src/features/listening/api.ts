@@ -62,6 +62,30 @@ export type Playlist = {
   tracks: PlaylistTrack[];
 };
 
+/** 오프라인 다운로드용. 회차 하나를 기기에 담는 데 필요한 것을 한 번에 준다 */
+export type DownloadItem = {
+  id: string;
+  itemNo: number;
+  questionText: string | null;
+  audioUrl: string;
+  /** presigned URL 은 만료되므로 저장 파일 이름은 이 키에서 뽑는다 */
+  audioKey: string;
+  durationMs: number | null;
+  sentences: SentenceItem[];
+};
+
+export type DownloadManifest = {
+  examId: string;
+  examLabel: string;
+  introUrl: string | null;
+  introKey: string | null;
+  items: DownloadItem[];
+};
+
+export function fetchDownloadManifest(accessToken: string, examId: string) {
+  return apiFetch<DownloadManifest>(`/api/listening/exams/${examId}/download`, { accessToken });
+}
+
 export function fetchPlaylist(accessToken: string, examId: string) {
   return apiFetch<Playlist>(`/api/listening/exams/${examId}/playlist`, { accessToken });
 }
