@@ -1,4 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { SymbolView } from 'expo-symbols';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -35,6 +36,24 @@ export default function ListeningItemsScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      <View style={styles.actionRow}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="전체 듣기"
+          onPress={() => router.push(`/listening/${examId}/full`)}
+          style={({ pressed }) => [styles.fullPlayButton, { opacity: pressed ? 0.82 : 1 }]}>
+          <SymbolView
+            name={{ ios: 'play.fill', android: 'play_arrow', web: 'play_arrow' }}
+            size={16}
+            tintColor="#ffffff"
+            weight={{ ios: 'semibold', android: { name: 'outlined', font: 500 } }}
+          />
+          <ThemedText type="small" style={styles.fullPlayText}>
+            전체 듣기
+          </ThemedText>
+        </Pressable>
+      </View>
+
       <ScrollView contentContainerStyle={styles.list}>
         {data.map((item) => (
           <ItemRow
@@ -95,6 +114,20 @@ function formatDuration(ms: number) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  actionRow: { paddingHorizontal: 20, paddingTop: 14 },
+  // 필터 칩과 같은 높이·모서리로 맞춘다
+  fullPlayButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    height: 38,
+    paddingHorizontal: 18,
+    borderRadius: 19,
+    alignSelf: 'flex-start',
+    backgroundColor: Palette.primary,
+  },
+  fullPlayText: { color: '#ffffff' },
   list: { padding: 20, paddingTop: 6, gap: 10 },
   row: {
     flexDirection: 'row',

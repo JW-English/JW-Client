@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { withAuth } from '@/lib/with-auth';
 
-import { fetchExams, fetchItem, fetchItems, saveProgress } from './api';
+import { fetchExams, fetchItem, fetchItems, fetchPlaylist, saveProgress } from './api';
 
 export function useExams(year?: number) {
   return useQuery({
@@ -16,6 +16,16 @@ export function useItems(examId: string) {
     queryKey: ['listening', 'items', examId],
     queryFn: () => withAuth((token) => fetchItems(token, examId)),
     enabled: Boolean(examId),
+  });
+}
+
+export function usePlaylist(examId: string) {
+  return useQuery({
+    queryKey: ['listening', 'playlist', examId],
+    queryFn: () => withAuth((token) => fetchPlaylist(token, examId)),
+    enabled: Boolean(examId),
+    // 트랙마다 만료형 URL 이 들어 있어 오래 들고 있으면 안 된다
+    staleTime: 10 * 60_000,
   });
 }
 
