@@ -95,7 +95,7 @@ function formatDuration(ms: number) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  list: { padding: 20, gap: 10 },
+  list: { padding: 20, paddingTop: 6, gap: 10 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
