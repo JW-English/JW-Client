@@ -45,6 +45,27 @@ export type ItemDetail = {
   sentences: SentenceItem[];
 };
 
+/** 전체 듣기 한 트랙. 16·17번처럼 음원을 공유하는 문항은 서버가 하나로 합쳐 준다 */
+export type PlaylistTrack = {
+  kind: 'INTRO' | 'ITEM';
+  /** INTRO 면 null */
+  itemId: string | null;
+  /** "안내 방송", "1번", "16-17번" */
+  label: string;
+  audioUrl: string;
+  durationMs: number | null;
+};
+
+export type Playlist = {
+  examId: string;
+  examLabel: string;
+  tracks: PlaylistTrack[];
+};
+
+export function fetchPlaylist(accessToken: string, examId: string) {
+  return apiFetch<Playlist>(`/api/listening/exams/${examId}/playlist`, { accessToken });
+}
+
 export function fetchExams(accessToken: string, year?: number) {
   return apiFetch<ExamListItem[]>(`/api/listening/exams${year ? `?year=${year}` : ''}`, {
     accessToken,
