@@ -1,5 +1,5 @@
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
-import { useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { SymbolView, type SymbolViewProps } from 'expo-symbols';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
@@ -94,6 +94,7 @@ export default function ListeningFullPlayScreen() {
   if (isPending) {
     return (
       <ThemedView style={styles.center}>
+        <Stack.Screen options={{ title: '전체 듣기' }} />
         <ActivityIndicator />
       </ThemedView>
     );
@@ -102,6 +103,7 @@ export default function ListeningFullPlayScreen() {
   if (error || !data || tracks.length === 0) {
     return (
       <ThemedView style={styles.center}>
+        <Stack.Screen options={{ title: '전체 듣기' }} />
         <ThemedText type="small" themeColor="textSecondary">
           재생할 음원을 불러오지 못했습니다
         </ThemedText>
@@ -111,9 +113,11 @@ export default function ListeningFullPlayScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      <Stack.Screen options={{ title: data.examLabel }} />
+
       <View style={styles.stage}>
         <ThemedText type="small" themeColor="textSecondary">
-          {data.examLabel}
+          전체 듣기
         </ThemedText>
 
         <ThemedText type="title" style={styles.trackLabel}>
@@ -218,11 +222,6 @@ export default function ListeningFullPlayScreen() {
               },
             ]}>
             <ThemedText type={i === index ? 'smallBold' : 'small'}>{track.label}</ThemedText>
-            {i < index ? (
-              <ThemedText type="small" style={styles.played}>
-                들음
-              </ThemedText>
-            ) : null}
           </Pressable>
         ))}
       </ScrollView>
@@ -380,5 +379,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 8,
   },
-  played: { color: Palette.success },
 });

@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -6,7 +6,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Palette } from '@/constants/theme';
 import type { ItemListItem } from '@/features/listening/api';
-import { useItems } from '@/features/listening/use-listening';
+import { useExams, useItems } from '@/features/listening/use-listening';
 import { useTheme } from '@/hooks/use-theme';
 
 /** 문항 선택 (1~17번). */
@@ -16,9 +16,15 @@ export default function ListeningItemsScreen() {
 
   const { data, isPending, error } = useItems(examId);
 
+  // 제목에 쓸 시험 이름. 목록 화면이 이미 받아둔 캐시를 그대로 쓰므로 대개 요청이 늘지 않는다
+  const { data: exams } = useExams();
+  const exam = exams?.find((e) => e.id === examId);
+  const title = exam ? `${exam.year}학년도 ${exam.examTypeLabel}` : '';
+
   if (isPending) {
     return (
       <ThemedView style={styles.center}>
+        <Stack.Screen options={{ title }} />
         <ActivityIndicator />
       </ThemedView>
     );
@@ -27,6 +33,7 @@ export default function ListeningItemsScreen() {
   if (error || !data) {
     return (
       <ThemedView style={styles.center}>
+        <Stack.Screen options={{ title }} />
         <ThemedText type="small" themeColor="textSecondary">
           문항을 불러오지 못했습니다
         </ThemedText>
@@ -36,6 +43,8 @@ export default function ListeningItemsScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      <Stack.Screen options={{ title }} />
+
       <View style={styles.actionRow}>
         <Pressable
           accessibilityRole="button"
@@ -91,7 +100,6 @@ function ItemRow({ item, onPress }: { item: ItemListItem; onPress: () => void })
         </ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
           {item.durationMs ? formatDuration(item.durationMs) : '—'}
-          {item.lastPositionMs > 0 && !item.completed ? ' · 이어듣기' : ''}
         </ThemedText>
       </View>
 
