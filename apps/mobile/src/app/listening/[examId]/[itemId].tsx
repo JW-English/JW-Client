@@ -1,7 +1,16 @@
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  type LayoutChangeEvent,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -12,6 +21,14 @@ import { useTheme } from '@/hooks/use-theme';
 
 const SPEEDS = [0.75, 1, 1.25];
 const PRIMARY_BLUE = '#5BA9FF';
+
+/** 직접 스크롤한 뒤 이만큼은 자동 스크롤이 끼어들지 않는다 — 앞 문장을 다시 읽는 중일 수 있다 */
+const MANUAL_SCROLL_PAUSE_MS = 4000;
+/** 현재 문장이 이 구간(화면 상단 15%~하단 25%) 안에 있으면 굳이 움직이지 않는다 */
+const BAND_TOP = 0.15;
+const BAND_BOTTOM = 0.75;
+/** 스크롤할 때 현재 문장을 화면 위쪽 이 지점에 둔다 */
+const ANCHOR = 0.35;
 
 /**
  * 문항 학습 화면.
@@ -33,10 +50,23 @@ export default function ListeningItemScreen() {
   const [speed, setSpeed] = useState(1);
   const lastSavedRef = useRef(0);
 
+  const scrollRef = useRef<ScrollView>(null);
+  const rowLayoutsRef = useRef<Record<number, { y: number; height: number }>>({});
+  const viewportRef = useRef(0);
+  const scrollYRef = useRef(0);
+  const manualScrollAtRef = useRef(0);
+
   const sentences = data?.sentences ?? [];
   const hasTimings = useHasTimings(sentences);
   const positionMs = Math.round((status.currentTime ?? 0) * 1000);
   const currentIndex = hasTimings ? findCurrentSentence(sentences, positionMs) : -1;
+
+  // 다른 문항으로 넘어오면 이전 문항의 행 위치는 버린다
+  useEffect(() => {
+    rowLayoutsRef.current = {};
+    scrollYRef.current = 0;
+    manualScrollAtRef.current = 0;
+  }, [data?.id]);
 
   // 이어듣기 위치 복원
   useEffect(() => {
@@ -60,8 +90,33 @@ export default function ListeningItemScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [positionMs, status.playing]);
 
+  const handleRowLayout = useCallback((index: number, y: number, height: number) => {
+    rowLayoutsRef.current[index] = { y, height };
+  }, []);
+
+  // 재생을 따라 현재 문장을 화면 안에 유지한다.
+  // 문장마다 스크롤하면 짧은 문장에서 화면이 계속 흔들리므로, 편한 구간을 벗어났을 때만 움직인다.
+  useEffect(() => {
+    if (currentIndex < 0) return;
+
+    const row = rowLayoutsRef.current[currentIndex];
+    const viewport = viewportRef.current;
+    if (!row || viewport <= 0) return;
+
+    if (Date.now() - manualScrollAtRef.current < MANUAL_SCROLL_PAUSE_MS) return;
+
+    const visibleTop = scrollYRef.current;
+    const bandTop = visibleTop + viewport * BAND_TOP;
+    const bandBottom = visibleTop + viewport * BAND_BOTTOM;
+    if (row.y >= bandTop && row.y + row.height <= bandBottom) return;
+
+    scrollRef.current?.scrollTo({ y: Math.max(0, row.y - viewport * ANCHOR), animated: true });
+  }, [currentIndex]);
+
   function handleSentencePress(sentence: SentenceItem) {
     if (!hasTimings) return;
+    // 직접 고른 문장이니 자동 스크롤을 다시 켠다
+    manualScrollAtRef.current = 0;
     player.seekTo(sentence.startMs / 1000);
     if (!status.playing) player.play();
   }
@@ -111,14 +166,28 @@ export default function ListeningItemScreen() {
         </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={styles.script}>
+      <ScrollView
+        ref={scrollRef}
+        contentContainerStyle={styles.script}
+        scrollEventThrottle={16}
+        onLayout={(e) => {
+          viewportRef.current = e.nativeEvent.layout.height;
+        }}
+        onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
+          scrollYRef.current = e.nativeEvent.contentOffset.y;
+        }}
+        onScrollBeginDrag={() => {
+          manualScrollAtRef.current = Date.now();
+        }}>
         {sentences.map((sentence, index) => (
           <SentenceRow
             key={sentence.id}
+            index={index}
             sentence={sentence}
             active={index === currentIndex}
             showTranslation={showTranslation}
             seekable={hasTimings}
+            onLayout={handleRowLayout}
             onPress={() => handleSentencePress(sentence)}
           />
         ))}
@@ -168,16 +237,20 @@ export default function ListeningItemScreen() {
 }
 
 function SentenceRow({
+  index,
   sentence,
   active,
   showTranslation,
   seekable,
+  onLayout,
   onPress,
 }: {
+  index: number;
   sentence: SentenceItem;
   active: boolean;
   showTranslation: boolean;
   seekable: boolean;
+  onLayout: (index: number, y: number, height: number) => void;
   onPress: () => void;
 }) {
   const theme = useTheme();
@@ -186,6 +259,10 @@ function SentenceRow({
     <Pressable
       onPress={onPress}
       disabled={!seekable}
+      onLayout={(e: LayoutChangeEvent) => {
+        const { y, height } = e.nativeEvent.layout;
+        onLayout(index, y, height);
+      }}
       style={[
         styles.sentence,
         { backgroundColor: active ? theme.backgroundSelected : 'transparent' },
