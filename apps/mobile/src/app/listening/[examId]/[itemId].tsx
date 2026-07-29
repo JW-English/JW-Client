@@ -203,9 +203,9 @@ export default function ListeningItemScreen() {
             </ThemedText>
           </View>
 
-          {items && items.length > 0 ? (
-            <ThemedText type="small" themeColor="textSecondary">
-              전체 {items.length}문항
+          {data.examLabel ? (
+            <ThemedText type="small" themeColor="textSecondary" numberOfLines={1}>
+              {data.examLabel}
             </ThemedText>
           ) : null}
 
