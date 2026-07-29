@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { SymbolView } from 'expo-symbols';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -24,6 +25,25 @@ export default function VocabularyHomeScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      <View style={styles.wrongNoteRow}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="오답노트"
+          onPress={() => router.push('/vocabulary/wrong-notes')}
+          hitSlop={8}
+          style={styles.wrongNoteLink}>
+          <SymbolView
+            name={{ ios: 'exclamationmark.circle', android: 'error', web: 'error' }}
+            size={15}
+            tintColor={Palette.primary}
+            weight={{ ios: 'regular', android: { name: 'outlined', font: 400 } }}
+          />
+          <ThemedText type="small" style={styles.wrongNoteText}>
+            오답노트
+          </ThemedText>
+        </Pressable>
+      </View>
+
       <View style={styles.gradeRow}>
         {GRADES.map((value) => {
           const active = selectedGrade === value;
@@ -120,6 +140,9 @@ function DayCard({ day, onPress }: { day: DayListItem; onPress: () => void }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  wrongNoteRow: { alignItems: 'flex-end', paddingHorizontal: 20, paddingTop: 12 },
+  wrongNoteLink: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  wrongNoteText: { color: Palette.primary },
   gradeRow: {
     flexDirection: 'row',
     gap: 8,

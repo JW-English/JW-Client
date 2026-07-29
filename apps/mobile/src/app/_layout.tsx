@@ -110,10 +110,14 @@ function RootNavigator() {
       <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
       <Stack.Screen name="(auth)/signup" options={{ title: '회원가입' }} />
       <Stack.Screen name="onboarding" options={{ title: '프로필 설정', headerBackVisible: false }} />
+      <Stack.Screen name="mypage" options={{ title: '마이페이지' }} />
+      <Stack.Screen name="settings" options={{ title: '설정' }} />
+      <Stack.Screen name="settings/password" options={{ title: '비밀번호 변경' }} />
       <Stack.Screen name="homework/index" options={{ title: '숙제' }} />
       <Stack.Screen name="homework/[id]" options={{ title: '숙제 상세' }} />
       <Stack.Screen name="vocabulary/index" options={{ title: '단어시험' }} />
       <Stack.Screen name="vocabulary/[dayId]" options={{ title: '단어장' }} />
+      <Stack.Screen name="vocabulary/wrong-notes" options={{ title: '오답노트' }} />
       {/*
         시험 중 실수로 빠져나가지 않도록 헤더 뒤로가기와 스와이프는 막되,
         화면 안의 "중단하기"로는 나갈 수 있게 한다 (확인 후 이탈, 답은 저장됨)

@@ -21,6 +21,7 @@ import { useItem, useItems } from '@/features/listening/use-listening';
 import { localUri, readOfflineExam } from '@/features/listening/offline-store';
 import { enqueueProgress } from '@/features/listening/progress-queue';
 import { useLockScreenControls } from '@/features/listening/use-lock-screen';
+import { useLearningSettings } from '@/features/settings/use-learning-settings';
 import { findCurrentSentence, useHasTimings } from '@/features/listening/use-sentence-sync';
 import { useTheme } from '@/hooks/use-theme';
 
@@ -72,6 +73,8 @@ export default function ListeningItemScreen() {
   const player = useAudioPlayer(source ? { uri: source } : null);
   const status = useAudioPlayerStatus(player);
 
+  // 설정 화면의 학습 기본값을 따른다
+  const { settings, loaded: settingsLoaded } = useLearningSettings();
   const [showTranslation, setShowTranslation] = useState(true);
   const [speed, setSpeed] = useState(1);
   const [scrubMs, setScrubMs] = useState<number | null>(null);
@@ -102,6 +105,16 @@ export default function ListeningItemScreen() {
   // 음원이 아직 안 읽혔으면 status.duration 이 0 이라 서버가 준 길이로 버틴다
   const durationMs = Math.round((status.duration ?? 0) * 1000) || (data?.durationMs ?? 0);
   const currentIndex = hasTimings ? findCurrentSentence(sentences, positionMs) : -1;
+
+  // 기본값이 읽히면 한 번 반영한다. 이후에는 화면에서 바꾼 값을 유지한다
+  const appliedSettingsRef = useRef(false);
+  useEffect(() => {
+    if (!settingsLoaded || appliedSettingsRef.current) return;
+    appliedSettingsRef.current = true;
+    setShowTranslation(settings.showTranslation);
+    setSpeed(settings.playbackRate);
+    player.setPlaybackRate(settings.playbackRate, 'high');
+  }, [settingsLoaded, settings, player]);
 
   // 다른 문항으로 넘어오면 이전 문항의 행 위치는 버린다
   useEffect(() => {
@@ -146,6 +159,7 @@ export default function ListeningItemScreen() {
     const viewport = viewportRef.current;
     if (!row || viewport <= 0) return;
 
+    if (!settings.autoScroll) return;
     if (Date.now() - manualScrollAtRef.current < MANUAL_SCROLL_PAUSE_MS) return;
 
     const visibleTop = scrollYRef.current;
@@ -154,7 +168,7 @@ export default function ListeningItemScreen() {
     if (row.y >= bandTop && row.y + row.height <= bandBottom) return;
 
     scrollRef.current?.scrollTo({ y: Math.max(0, row.y - viewport * ANCHOR), animated: true });
-  }, [currentIndex]);
+  }, [currentIndex, settings.autoScroll]);
 
   function handleSentencePress(sentence: SentenceItem) {
     if (!hasTimings) return;

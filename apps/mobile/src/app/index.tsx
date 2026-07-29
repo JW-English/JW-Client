@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -15,8 +16,8 @@ import { useTheme } from '@/hooks/use-theme';
  */
 export default function HomeScreen() {
   const theme = useTheme();
+  const router = useRouter();
   const me = useAuthStore((state) => state.me);
-  const signOut = useAuthStore((state) => state.signOut);
 
   return (
     <ThemedView style={styles.container}>
@@ -28,9 +29,10 @@ export default function HomeScreen() {
           <View style={styles.topActions}>
             <Pressable
               accessibilityRole="button"
-              disabled
+              accessibilityLabel="마이페이지"
+              onPress={() => router.push('/mypage')}
               hitSlop={10}
-              style={[styles.topIconButton, styles.disabledTopIcon]}>
+              style={styles.topIconButton}>
               <SymbolView
                 name={{ ios: 'person.circle', android: 'person', web: 'person' }}
                 size={20}
@@ -38,7 +40,12 @@ export default function HomeScreen() {
                 weight={{ ios: 'regular', android: { name: 'outlined', font: 400 } }}
               />
             </Pressable>
-            <Pressable accessibilityRole="button" hitSlop={10} style={styles.topIconButton}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="설정"
+              onPress={() => router.push('/settings')}
+              hitSlop={10}
+              style={styles.topIconButton}>
               <SymbolView
                 name={{ ios: 'gearshape', android: 'settings', web: 'settings' }}
                 size={19}
@@ -104,12 +111,6 @@ export default function HomeScreen() {
           />
         </View>
 
-        <Pressable onPress={signOut} style={styles.signOut}>
-          <ThemedText type="small" themeColor="textSecondary">
-            로그아웃
-          </ThemedText>
-        </Pressable>
-
         <Pressable accessibilityRole="button" style={styles.calendarButton}>
           <SymbolView
             name={{ ios: 'calendar', android: 'calendar_month', web: 'calendar_month' }}
@@ -160,9 +161,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: Palette.line,
-  },
-  disabledTopIcon: {
-    opacity: 0.58,
   },
   header: {
     minHeight: 188,
@@ -267,11 +265,6 @@ const styles = StyleSheet.create({
     color: Palette.primary,
     fontSize: 17,
     transform: [{ rotate: '-18deg' }],
-  },
-  signOut: {
-    alignItems: 'center',
-    paddingTop: 6,
-    paddingBottom: 0,
   },
   calendarButton: {
     alignSelf: 'center',
