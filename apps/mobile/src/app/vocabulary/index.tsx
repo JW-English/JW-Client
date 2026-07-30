@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -27,6 +27,17 @@ export default function VocabularyHomeScreen() {
 
   const { data, isPending, error } = useDays(level ?? undefined);
   const selectedLevel = level ?? myLevel;
+
+  // 레벨을 바꾸면 목록이 통째로 달라지는데 스크롤 위치는 그대로 남는다.
+  // Beginner 를 DAY 20 까지 내리다 Advanced 로 옮기면 DAY 20 부터 보인다.
+  //
+  // 목록을 이미 받아둔 레벨로 옮기면 ScrollView 가 다시 마운트되지 않아
+  // 위치가 남는다. 처음 보는 레벨은 로딩 화면을 거치며 새로 마운트돼 저절로
+  // 맨 위지만, 그 경우에도 이 호출은 무해하다
+  const listRef = useRef<ScrollView>(null);
+  useEffect(() => {
+    listRef.current?.scrollTo({ y: 0, animated: false });
+  }, [selectedLevel]);
 
   return (
     <ThemedView style={styles.container}>
@@ -90,7 +101,7 @@ export default function VocabularyHomeScreen() {
           </ThemedText>
         </View>
       ) : (
-        <ScrollView contentContainerStyle={styles.list}>
+        <ScrollView ref={listRef} contentContainerStyle={styles.list}>
           {data.map((day) => (
             <DayCard
               key={day.id}
