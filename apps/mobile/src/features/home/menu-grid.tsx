@@ -46,6 +46,7 @@ const MENUS: Menu[] = [
     label: 'Q&A',
     icon: { ios: 'questionmark.circle', android: 'help', web: 'help' },
     image: require('../../../assets/images/menu-icons/qna.png'),
+    href: '/qna',
   },
   {
     key: 'course',
