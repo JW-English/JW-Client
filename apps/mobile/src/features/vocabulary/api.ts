@@ -1,3 +1,4 @@
+import type { VocabLevel } from '@/features/auth/api';
 import { apiFetch } from '@/lib/api';
 
 export type DayListItem = {
@@ -63,13 +64,16 @@ export type ResultResponse = {
   totalCount: number;
   correctCount: number;
   score: number;
+  /** 정답률이 passPercent 이상인지. 판정은 서버가 한다 */
+  passed: boolean;
+  passPercent: number;
   startedAt: string;
   finishedAt: string;
   reviews: ReviewItem[];
 };
 
-export function fetchDays(accessToken: string, grade?: number) {
-  return apiFetch<DayListItem[]>(`/api/vocabulary/days${grade ? `?grade=${grade}` : ''}`, {
+export function fetchDays(accessToken: string, level?: VocabLevel) {
+  return apiFetch<DayListItem[]>(`/api/vocabulary/days${level ? `?level=${level}` : ''}`, {
     accessToken,
   });
 }

@@ -28,6 +28,7 @@ export type AttemptHistoryItem = {
   correctCount: number;
   /** 0~100 */
   score: number;
+  passed: boolean;
   finishedAt: string;
 };
 

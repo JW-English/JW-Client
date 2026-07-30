@@ -47,19 +47,40 @@ export default function QuizResultScreen() {
         <View
           style={[
             styles.scoreCard,
-            { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected },
+            {
+              backgroundColor: theme.backgroundElement,
+              borderColor: data.passed ? Palette.success : Palette.danger,
+            },
           ]}>
+          <View
+            style={[
+              styles.verdictBadge,
+              { backgroundColor: data.passed ? Palette.success : Palette.danger },
+            ]}>
+            <ThemedText type="smallBold" style={styles.verdictText}>
+              {data.passed ? '합격' : '불합격'}
+            </ThemedText>
+          </View>
+
           <ThemedText type="title">{Math.round(data.score)}점</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
             {data.correctCount} / {data.totalCount} 정답 · {formatElapsed(elapsedSeconds)}
           </ThemedText>
-          {wrongCount > 0 ? (
-            <ThemedText type="small" themeColor="textSecondary">
-              틀린 {wrongCount}개는 오답노트에 담겼어요
-            </ThemedText>
+
+          {data.passed ? (
+            wrongCount > 0 ? (
+              <ThemedText type="small" themeColor="textSecondary">
+                틀린 {wrongCount}개는 오답노트에 담겼어요
+              </ThemedText>
+            ) : (
+              <ThemedText type="small" style={{ color: Palette.success }}>
+                모두 맞혔어요
+              </ThemedText>
+            )
           ) : (
-            <ThemedText type="small" style={{ color: Palette.success }}>
-              모두 맞혔어요
+            // 몇 개를 더 맞혀야 했는지 알려준다. "불합격" 만 띄우면 얼마나 모자란지 모른다
+            <ThemedText type="small" themeColor="textSecondary">
+              {data.passPercent}% 이상이면 합격이에요 · {neededToPass(data.totalCount, data.passPercent) - data.correctCount}개 더 맞혀야 해요
             </ThemedText>
           )}
         </View>
@@ -80,6 +101,11 @@ export default function QuizResultScreen() {
       </ScrollView>
     </ThemedView>
   );
+}
+
+/** 합격에 필요한 최소 정답 수. 서버 판정(correct * 100 >= total * pass)과 같은 식이다 */
+function neededToPass(totalCount: number, passPercent: number) {
+  return Math.ceil((totalCount * passPercent) / 100);
 }
 
 function ReviewRow({ review }: { review: ReviewItem }) {
@@ -129,6 +155,12 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   content: { padding: 20, gap: 12 },
+  verdictBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  verdictText: { color: '#ffffff' },
   scoreCard: { borderRadius: 16, padding: 20, gap: 6, alignItems: 'center', borderWidth: 1 },
   reviewRow: { borderRadius: 14, padding: 14, gap: 4, borderWidth: 1 },
   reviewHeader: {

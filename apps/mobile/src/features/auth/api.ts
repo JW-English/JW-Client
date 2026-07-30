@@ -1,5 +1,7 @@
 import { apiFetch } from '@/lib/api';
 
+export type VocabLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+
 export type TokenResponse = {
   accessToken: string;
   refreshToken: string;
@@ -14,6 +16,8 @@ export type Me = {
   role: 'STUDENT' | 'TEACHER' | 'ADMIN';
   grade: number | null;
   school: string | null;
+  /** 어휘 레벨. 학교 학년과 별개고 선생님이 지정한다 */
+  vocabLevel: VocabLevel | null;
   onboarded: boolean;
 };
 
