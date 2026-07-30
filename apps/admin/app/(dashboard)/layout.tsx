@@ -9,6 +9,7 @@ import { useSession } from '@/lib/session';
 const NAV = [
   { href: '/submissions', label: '제출 현황' },
   { href: '/assignments', label: '숙제 관리' },
+  { href: '/questions', label: 'Q&A' },
 ];
 
 /** 로그인한 선생님만 들어올 수 있는 영역. 서버도 /api/admin/** 를 막지만 화면도 막는다. */
