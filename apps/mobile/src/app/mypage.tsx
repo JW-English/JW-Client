@@ -155,17 +155,11 @@ function AttemptRow({ attempt }: { attempt: AttemptHistoryItem }) {
           {formatDate(attempt.finishedAt)} · {attempt.correctCount}/{attempt.totalCount}
         </ThemedText>
       </View>
-      <ThemedText type="smallBold" style={scoreStyle(attempt.score)}>
+      <ThemedText type="smallBold" style={attempt.passed ? styles.scoreHigh : styles.scoreLow}>
         {Math.round(attempt.score)}점
       </ThemedText>
     </View>
   );
-}
-
-function scoreStyle(score: number) {
-  if (score >= 90) return styles.scoreHigh;
-  if (score < 60) return styles.scoreLow;
-  return undefined;
 }
 
 function formatDate(iso: string) {

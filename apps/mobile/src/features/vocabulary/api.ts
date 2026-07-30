@@ -64,6 +64,9 @@ export type ResultResponse = {
   totalCount: number;
   correctCount: number;
   score: number;
+  /** 정답률이 passPercent 이상인지. 판정은 서버가 한다 */
+  passed: boolean;
+  passPercent: number;
   startedAt: string;
   finishedAt: string;
   reviews: ReviewItem[];
