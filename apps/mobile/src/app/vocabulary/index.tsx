@@ -7,21 +7,26 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Palette } from '@/constants/theme';
 import { useAuthStore } from '@/features/auth/auth-store';
+import type { VocabLevel } from '@/features/auth/api';
 import type { DayListItem } from '@/features/vocabulary/api';
 import { useDays } from '@/features/vocabulary/use-vocabulary';
 import { useTheme } from '@/hooks/use-theme';
 
-const GRADES = [1, 2, 3];
+const LEVELS: { value: VocabLevel; label: string }[] = [
+  { value: 'BEGINNER', label: 'Beginner' },
+  { value: 'INTERMEDIATE', label: 'Intermediate' },
+  { value: 'ADVANCED', label: 'Advanced' },
+];
 
-/** 학년 선택 → DAY 리스트. 기본값은 내 학년이고 다른 학년도 열람할 수 있다. */
+/** 레벨 선택 → DAY 리스트. 기본값은 내 레벨이고 다른 레벨도 열람할 수 있다. */
 export default function VocabularyHomeScreen() {
   const theme = useTheme();
   const router = useRouter();
-  const myGrade = useAuthStore((state) => state.me?.grade ?? null);
-  const [grade, setGrade] = useState<number | null>(null);
+  const myLevel = useAuthStore((state) => state.me?.vocabLevel ?? null);
+  const [level, setLevel] = useState<VocabLevel | null>(null);
 
-  const { data, isPending, error } = useDays(grade ?? undefined);
-  const selectedGrade = grade ?? myGrade;
+  const { data, isPending, error } = useDays(level ?? undefined);
+  const selectedLevel = level ?? myLevel;
 
   return (
     <ThemedView style={styles.container}>
@@ -44,22 +49,24 @@ export default function VocabularyHomeScreen() {
         </Pressable>
       </View>
 
-      <View style={styles.gradeRow}>
-        {GRADES.map((value) => {
-          const active = selectedGrade === value;
+      <View style={styles.levelRow}>
+        {LEVELS.map(({ value, label }) => {
+          const active = selectedLevel === value;
           return (
             <Pressable
               key={value}
-              onPress={() => setGrade(value)}
+              accessibilityRole="button"
+              accessibilityState={{ selected: active }}
+              onPress={() => setLevel(value)}
               style={[
-                styles.gradeChip,
+                styles.levelChip,
                 {
                   backgroundColor: active ? Palette.primary : theme.backgroundElement,
                   borderColor: active ? Palette.primary : theme.backgroundSelected,
                 },
               ]}>
-              <ThemedText type="smallBold" style={active ? styles.gradeTextActive : undefined}>
-                고{value}
+              <ThemedText type="smallBold" style={active ? styles.levelTextActive : undefined}>
+                {label}
               </ThemedText>
             </Pressable>
           );
@@ -143,19 +150,22 @@ const styles = StyleSheet.create({
   wrongNoteRow: { alignItems: 'flex-end', paddingHorizontal: 20, paddingTop: 12 },
   wrongNoteLink: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   wrongNoteText: { color: Palette.primary },
-  gradeRow: {
+  levelRow: {
     flexDirection: 'row',
     gap: 8,
     paddingHorizontal: 20,
     paddingVertical: 14,
   },
-  gradeChip: {
-    paddingHorizontal: 16,
+  // Intermediate 가 길어 고정 폭으로는 셋이 안 들어간다. 남는 폭을 셋이 나눠 갖는다
+  levelChip: {
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: 8,
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
   },
-  gradeTextActive: { color: '#ffffff' },
+  levelTextActive: { color: '#ffffff' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 },
   list: { padding: 20, paddingTop: 6, gap: 12 },
   card: {

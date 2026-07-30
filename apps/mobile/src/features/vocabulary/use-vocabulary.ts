@@ -1,13 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import type { VocabLevel } from '@/features/auth/api';
 import { withAuth } from '@/lib/with-auth';
 
 import { fetchDay, fetchDays, fetchResult, saveAnswer, startQuiz, submitQuiz } from './api';
 
-export function useDays(grade?: number) {
+export function useDays(level?: VocabLevel) {
   return useQuery({
-    queryKey: ['vocabulary', 'days', grade ?? 'mine'],
-    queryFn: () => withAuth((token) => fetchDays(token, grade)),
+    queryKey: ['vocabulary', 'days', level ?? 'mine'],
+    queryFn: () => withAuth((token) => fetchDays(token, level)),
   });
 }
 

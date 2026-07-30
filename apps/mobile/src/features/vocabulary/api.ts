@@ -1,3 +1,4 @@
+import type { VocabLevel } from '@/features/auth/api';
 import { apiFetch } from '@/lib/api';
 
 export type DayListItem = {
@@ -68,8 +69,8 @@ export type ResultResponse = {
   reviews: ReviewItem[];
 };
 
-export function fetchDays(accessToken: string, grade?: number) {
-  return apiFetch<DayListItem[]>(`/api/vocabulary/days${grade ? `?grade=${grade}` : ''}`, {
+export function fetchDays(accessToken: string, level?: VocabLevel) {
+  return apiFetch<DayListItem[]>(`/api/vocabulary/days${level ? `?level=${level}` : ''}`, {
     accessToken,
   });
 }
