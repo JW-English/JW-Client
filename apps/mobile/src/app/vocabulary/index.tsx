@@ -138,7 +138,6 @@ function DayCard({ day, onPress }: { day: DayListItem; onPress: () => void }) {
 
       <ThemedText type="small" themeColor="textSecondary">
         {day.wordCount}단어
-        {day.scheduledDate ? ` · ${day.scheduledDate}` : ''}
         {day.attemptCount > 1 ? ` · ${day.attemptCount}회 응시` : ''}
       </ThemedText>
     </Pressable>
